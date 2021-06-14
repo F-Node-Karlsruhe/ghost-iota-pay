@@ -1,5 +1,5 @@
 # This file may be used to create an environment using:
-# $ conda create --name <env> --file <this file>
+# $ conda env create --name <env> --file <this file>
 # platform: osx-64
 ca-certificates=2021.4.13=hecd8cb5_1
 certifi=2020.12.5=py39hecd8cb5_0
