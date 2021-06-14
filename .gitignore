@@ -1,1 +1,4 @@
 env.yml
+/.vscode/
+.DS_store
+.env
