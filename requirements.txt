@@ -1,31 +1,23 @@
-# This file may be used to create an environment using:
-# $ conda env create --name <env> --file <this file>
-# platform: osx-64
-ca-certificates=2021.4.13=hecd8cb5_1
-certifi=2020.12.5=py39hecd8cb5_0
-chardet=4.0.0=pypi_0
-click=8.0.1=pypi_0
-flask=2.0.1=pypi_0
-idna=2.10=pypi_0
-iota-wallet-python-binding=0.1.0=pypi_0
-itsdangerous=2.0.1=pypi_0
-jinja2=3.0.1=pypi_0
-libcxx=10.0.0=1
-libffi=3.3=hb1e8313_2
-markupsafe=2.0.1=pypi_0
-ncurses=6.2=h0a44026_1
-openssl=1.1.1k=h9ed2024_0
-pip=21.0.1=py39hecd8cb5_0
-python=3.9.4=h88f2d9e_0
-python-dotenv=0.17.1=pypi_0
-readline=8.1=h9ed2024_0
-requests=2.25.1=pypi_0
-setuptools=52.0.0=py39hecd8cb5_0
-sqlite=3.35.4=hce871da_0
-tk=8.6.10=hb0a8c7a_0
-tzdata=2020f=h52ac0ba_0
-urllib3=1.23=pypi_0
-werkzeug=2.0.1=pypi_0
-wheel=0.36.2=pyhd3eb1b0_0
-xz=5.2.5=h1de35cc_0
-zlib=1.2.11=h1de35cc_3
+certifi==2021.5.30
+chardet==4.0.0
+click==8.0.1
+colorama==0.4.4
+Flask==2.0.1
+idna==2.10
+importlib-metadata==4.5.0
+iota-client-python @ file:///C:/Users/%Name%/Downloads/windows-iota-client-py3.7-wheels/iota_client_python-0.2.0_alpha.3-cp36-abi3-win_amd64.whl
+iota-wallet-python-binding @ file:///C:/Users/%Name%/Downloads/windows-iota-wallet-py3.7-wheel/iota_wallet_python_binding-0.1.0-cp36-abi3-win_amd64.whl
+itsdangerous==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+numpy==1.20.3
+pi==0.1.2
+PyJWT==2.1.0
+python-dateutil==2.8.1
+pytz==2021.1
+requests==2.25.1
+six==1.16.0
+typing-extensions==3.10.0.0
+urllib3==1.26.5
+Werkzeug==2.0.1
+zipp==3.4.1
