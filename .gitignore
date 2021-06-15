@@ -1,4 +1,4 @@
-/iota/
-/.vscode/
+iota/
+.vscode/
 .DS_store
 .env
