@@ -30,9 +30,12 @@ id, secret = key.split(':')
 def proxy(slug):
 
 
-    # Check if slug exists 
+    # Check if slug exists and add to db
     if slug not in payed_db.keys():
-        return make_response('Slug not available')
+        if requests.get('https://%s/%s' % (URL,slug)).status_code == 200:
+            payed_db[slug] = set()
+        else:
+            return make_response('Slug not available')
 
     # Get userId from cookie
     user_token = request.cookies.get('iota_ghost_user_token')
