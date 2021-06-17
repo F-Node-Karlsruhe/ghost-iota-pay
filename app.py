@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, session
 import logging
 import secrets
 import hashlib
@@ -39,18 +39,15 @@ def proxy(slug):
         else:
 
             return make_response('Slug not available')
-
-    # Get userId from cookie
-    user_token = request.cookies.get('iota_ghost_user_token')
+    
 
     # Check if user already has cookie and set one 
-    if user_token is None:
-        resp = make_response(render_template('pay.html'))
-        user_token = get_new_user_id()
-        resp.set_cookie('iota_ghost_user_token', user_token)
-        return resp
+    if 'iota_ghost_user_token' not in session:
+        session['iota_ghost_user_token'] = get_new_user_id()
+        return make_response(render_template('pay.html'))
+
 	
-    user_token_hash = hashlib.sha256(user_token.encode('utf-8')).hexdigest()
+    user_token_hash = hashlib.sha256(session['iota_ghost_user_token'].encode('utf-8')).hexdigest()
     
     if has_paid(user_token_hash, slug):
 
