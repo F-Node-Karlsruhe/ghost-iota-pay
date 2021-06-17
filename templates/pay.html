@@ -1,1 +1,12 @@
-<p>include payment form</p>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+</head>
+<body style="height: 100%; display: flex; align-items: center; justify-content: center;">
+<div style="margin: auto;">
+    <h3>Please pay {{ price }} IOTA to the following address and attach the displayed data.</h3>
+    <p>Address: {{ iota_address }}</p>
+    <p>Data: {{ slug }}:{{ user_token_hash }}</p>
+</div>
+</body>
+</html>

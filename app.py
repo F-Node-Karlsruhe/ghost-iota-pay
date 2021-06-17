@@ -1,40 +1,35 @@
-from flask import Flask, render_template, request, make_response, Response, redirect
-import requests
+from flask import Flask, render_template, request, make_response
 import logging
-import jwt	# pip install pyjwt
-from datetime import datetime as date
 import secrets
-import iota_client
 import hashlib
+import iota_mqtt as iota
+import ghost_api as ghost
+
 
 app = Flask(__name__.split('.')[0])
 logging.basicConfig(level=logging.DEBUG)
 # Set it to you domain
-LOG = logging.getLogger("app.py")
-
-# register all paying user token hashes
-payed_db= {'welcome': set()}
-
-# Url of the ghost blog
-URL = 'localhost:2368'
-
-# Ghost Admin API key goes here
-key = '60c71d772cc77223dcb90dc8:392420d07ba4c207d530275078de9630a17b0319e98843f50657fa77a429ce5e'
-
-# Split the key into ID and SECRET
-id, secret = key.split(':')
+LOG = logging.getLogger("iota-ghost-pay")
 
 
+@app.route('/', methods=["GET"])
+def welcome():
+    return make_response(render_template('welcome.html'))
 
 @app.route('/<slug>', methods=["GET"])
 def proxy(slug):
 
-
     # Check if slug exists and add to db
-    if slug not in payed_db.keys():
-        if requests.get('https://%s/%s' % (URL,slug)).status_code == 200:
-            payed_db[slug] = set()
+    if slug not in iota.payed_db.keys():
+
+        if ghost.check_slug_exists(slug):
+
+            iota.payed_db[slug] = set()
+
+            LOG.debug("Added slug %s to db", slug)
+
         else:
+
             return make_response('Slug not available')
 
     # Get userId from cookie
@@ -47,44 +42,28 @@ def proxy(slug):
         resp.set_cookie('iota_ghost_user_token', user_token)
         return resp
 	
-    
-    if has_paid(user_token, slug):
-        return deliver_content(slug)
-
-    return make_response(render_template('pay.html'))
-
-def deliver_content(slug):
-    # Make an authenticated request to get a posts html
-    url = 'http://%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
-    headers = {'Authorization': 'Ghost {}'.format(create_token())}
-    return requests.get(url, headers=headers).json()['posts'][0]['html']
-
-def has_paid(user_token, slug):
-
     user_token_hash = hashlib.sha256(user_token.encode('utf-8')).hexdigest()
-
-    if user_token_hash in payed_db[slug]:
-        return True
-
     
-    payed_db[slug].add(user_token_hash)
-    return False
+    if has_paid(user_token_hash, slug):
+
+        return ghost.deliver_content(slug)
+
+    return make_response(render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota.iota_address, slug = slug, price = iota.PRICE ))
+
+
+def has_paid(user_token_hash, slug):
+
+    return user_token_hash in iota.payed_db[slug]
+
 
 
 def get_new_user_id():
     return secrets.token_hex(16)
 
-def create_token():
-    iat = int(date.now().timestamp())
-    header = {'alg': 'HS256', 'typ': 'JWT', 'kid': id}
-    payload = {
-        'iat': iat,
-        'exp': iat + 5 * 60,
-        'aud': '/v3/admin/'
-    }
-    return jwt.encode(payload, bytes.fromhex(secret), algorithm='HS256', headers=header)
-
-
 
 if __name__ == '__main__':
-   app.run()
+    try:
+        iota.start()
+        app.run()
+    except KeyboardInterrupt:
+        iota.stop()

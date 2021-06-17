@@ -2,3 +2,5 @@ iota/
 .vscode/
 .DS_store
 .env
+.db/
+__pycache__/
