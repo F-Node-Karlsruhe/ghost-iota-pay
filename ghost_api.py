@@ -1,12 +1,16 @@
 import requests # pip install requests
 import jwt	# pip install pyjwt
 from datetime import datetime as date
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Url of the ghost blog
-URL = 'localhost:2368'
+URL = os.getenv('URL')
 
 # Ghost Admin API key goes here
-key = '60c71d772cc77223dcb90dc8:392420d07ba4c207d530275078de9630a17b0319e98843f50657fa77a429ce5e'
+key = os.getenv('GHOST_ADMIN_KEY')
 
 # Split the key into ID and SECRET
 id, secret = key.split(':')

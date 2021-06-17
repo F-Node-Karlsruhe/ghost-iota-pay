@@ -3,13 +3,16 @@ import json
 import queue
 import time
 import threading
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 # init iota client
 iota = iota_client.Client()
 
 # iota address for transfers
-iota_address= 'atoi1qq4tuenpv2cxlcg7hd2lem6q7qzvt5wlapmtfj92nskpmuq9luqtqyguj6x'
+iota_address= os.getenv('IOTA_ADDRESS')
 
 # price per content
 PRICE = 1000000

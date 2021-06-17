@@ -4,9 +4,17 @@ import secrets
 import hashlib
 import iota_mqtt as iota
 import ghost_api as ghost
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 app = Flask(__name__.split('.')[0])
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+
+
 logging.basicConfig(level=logging.DEBUG)
 # Set it to you domain
 LOG = logging.getLogger("iota-ghost-pay")
