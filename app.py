@@ -6,6 +6,7 @@ import iota_mqtt as iota
 import ghost_api as ghost
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 load_dotenv()
 
@@ -13,7 +14,9 @@ app = Flask(__name__.split('.')[0])
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-
+# restrict the access time for the user
+# comment out for infinite
+app.permanent_session_lifetime = timedelta(hours=int(os.getenv('SESSION_LIFETIME')))
 
 logging.basicConfig(level=logging.DEBUG)
 # Set it to you domain
