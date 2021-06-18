@@ -5,6 +5,7 @@ import time
 import threading
 from dotenv import load_dotenv
 import os
+from app import payment_received
 
 load_dotenv()
 
@@ -71,7 +72,12 @@ def worker():
 
             slug = data.split(':')[0]
             user_token_hash = data.split(':')[1]
-            payed_db[slug].add(user_token_hash)
+
+            payed_db[slug].add(user_token_hash)         
+
+            payment_received(user_token_hash)
+
+            print('%s bought slug %s' % (user_token_hash, slug))
 
         q.task_done()
 

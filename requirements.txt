@@ -1,12 +1,14 @@
+bidict==0.21.2
 certifi==2021.5.30
 chardet==4.0.0
 click==8.0.1
 colorama==0.4.4
 Flask==2.0.1
+Flask-SocketIO==5.1.0
 idna==2.10
 importlib-metadata==4.5.0
-iota-client-python @ file:///C:/Users/%NAME%/Downloads/windows-iota-client-py3.7-wheels/iota_client_python-0.2.0_alpha.3-cp36-abi3-win_amd64.whl
-iota-wallet-python-binding @ file:///C:/Users/%NAME%/Downloads/windows-iota-wallet-py3.7-wheel/iota_wallet_python_binding-0.1.0-cp36-abi3-win_amd64.whl
+iota-client-python @ file:///C:/Users/Christian/Downloads/windows-iota-client-py3.7-wheels/iota_client_python-0.2.0_alpha.3-cp36-abi3-win_amd64.whl
+iota-wallet-python-binding @ file:///C:/Users/Christian/Downloads/windows-iota-wallet-py3.7-wheel/iota_wallet_python_binding-0.1.0-cp36-abi3-win_amd64.whl
 itsdangerous==2.0.1
 Jinja2==3.0.1
 MarkupSafe==2.0.1
@@ -14,6 +16,9 @@ numpy==1.20.3
 pi==0.1.2
 PyJWT==2.1.0
 python-dateutil==2.8.1
+python-dotenv==0.17.1
+python-engineio==4.2.0
+python-socketio==5.3.0
 pytz==2021.1
 requests==2.25.1
 six==1.16.0

@@ -1,6 +1,26 @@
 <html>
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>IOTA Pay per Content Gateway</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        // start up the SocketIO connection to the server
+        var socket = io();
+        // this is a callback that triggers when the "message" event is emitted by the server.
+        console.log('connecting websocket...');
+        socket.on('connect', function() {
+            console.log('connected websocket');
+            socket.emit('await_payment', {user_token_hash: '{{ user_token_hash }}'});
+        });
+        socket.on('payment_received', function(msg){
+            console.log(msg)
+            location.reload();
+        });
+
+    });
+</script>
 </head>
 <body style="height: 100%; display: flex; align-items: center; justify-content: center;">
 <div style="margin: auto;">
