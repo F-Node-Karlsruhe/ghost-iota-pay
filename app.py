@@ -41,7 +41,7 @@ iota = iota_client.Client()
 iota_address= os.getenv('IOTA_ADDRESS')
 
 # price per content
-PRICE = 1000000
+price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
 # register all paying user token hashes
 payed_db= {}
@@ -66,8 +66,6 @@ broker_options = {
 
 # create the iota client
 client = iota_client.Client(mqtt_broker_options=broker_options)
-
-print(client.get_info())
 
 
 @app.route('/', methods=["GET"])
@@ -103,7 +101,7 @@ def proxy(slug):
 
         return ghost.deliver_content(slug)
 
-    return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, slug = slug, price = PRICE )
+    return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, slug = slug, price = price_per_content )
 
 
 # socket endpoint to receive payment event
@@ -115,12 +113,6 @@ def await_payment(data):
 
     socket_session_ids[user_token_hash] = request.sid
 
-
-
-@socketio.on('disconnect')
-def disconnect():
-
-    print('discon')
 
 
 def on_mqtt_event(event):
@@ -140,6 +132,8 @@ def mqtt_worker():
     """
     while True:
         item = q.get(True)
+
+        # break work routine
         if item is STOP: break
         event = json.loads(item)
 
@@ -159,7 +153,7 @@ def mqtt_worker():
                 # emit pamyent received event to the user
                 socketio.emit('payment_received', room=socket_session_ids.pop(user_token_hash))
 
-                print('%s bought slug %s' % (user_token_hash, slug))
+                LOG.info('%s bought slug %s' % (user_token_hash, slug))
 
         q.task_done()
 
@@ -170,22 +164,23 @@ def check_payment(message):
 
         if output['signature_locked_single']['address'] == iota_address:
 
-            if output['signature_locked_single']['amount'] >= PRICE:
+            if output['signature_locked_single']['amount'] >= price_per_content:
 
                 return True
 
     return False
 
 if __name__ == '__main__':
-    try:
 
         # sadly this all has to run in the same script
         socketio.start_background_task(mqtt)
         socketio.run(app)
 
-    except KeyboardInterrupt:
-        print('Stopping')
+        # Stop server
+        LOG.info('Stopping ...')
         q.put(STOP)
+        LOG.info('MQTT worker stopped')
         client.disconnect()
+        LOG.info('MQTT client stopped')
         q.queue.clear()
-        exit()
+        LOG.info('Working queue cleared')
