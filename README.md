@@ -10,6 +10,11 @@ pip install -r requirements.txt
 ```
 
 ### Set environment variables
+Copy the evn file  
+```shell
+cp example.env .env
+```
+Alter the following variables:  
 
 - `URL`
   Default Value: `http://localhost:2365` . Set to the url of the ghost blog which shall be fetched.
