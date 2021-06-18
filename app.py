@@ -44,7 +44,10 @@ iota_address= os.getenv('IOTA_ADDRESS')
 price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
 # register all paying user token hashes
-payed_db= {}
+payed_db = set()
+
+# keep tracl of valid slugs
+known_slugs = set()
 
 
 # The node mqtt url
@@ -76,11 +79,11 @@ def welcome():
 def proxy(slug):
 
     # Check if slug exists and add to db
-    if slug not in payed_db.keys():
+    if slug not in known_slugs:
 
         if ghost.check_slug_exists(slug):
 
-            payed_db[slug] = set()
+            known_slugs.add(slug)
 
             LOG.debug("Added slug %s to db", slug)
 
@@ -90,18 +93,18 @@ def proxy(slug):
     
 
     # Check if user already has cookie and set one 
-    if 'iota_ghost_user_token' not in session:
-        session['iota_ghost_user_token'] = secrets.token_hex(16)
+    if 'iota_ghost_user_token:' + slug not in session:
+        session['iota_ghost_user_token:' + slug] = secrets.token_hex(16)
         return render_template('pay.html')
 
 	
-    user_token_hash = hashlib.sha256(session['iota_ghost_user_token'].encode('utf-8')).hexdigest()
+    user_token_hash = hashlib.sha256(session['iota_ghost_user_token:' + slug].encode('utf-8')).hexdigest()
     
-    if user_token_hash in payed_db[slug]:
+    if user_token_hash in payed_db:
 
         return ghost.deliver_content(slug)
 
-    return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, slug = slug, price = price_per_content )
+    return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content )
 
 
 # socket endpoint to receive payment event
@@ -141,19 +144,14 @@ def mqtt_worker():
 
         if check_payment(message):
             # this must be easier to access within value transfers
-            data = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
+            user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-            slug = data.split(':')[0]
-            user_token_hash = data.split(':')[1]
-
-            payed_db[slug].add(user_token_hash)         
+            payed_db.add(user_token_hash)         
 
             if user_token_hash in socket_session_ids.keys():
 
                 # emit pamyent received event to the user
                 socketio.emit('payment_received', room=socket_session_ids.pop(user_token_hash))
-
-                LOG.info('%s bought slug %s' % (user_token_hash, slug))
 
         q.task_done()
 
