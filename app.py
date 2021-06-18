@@ -68,7 +68,9 @@ broker_options = {
 }
 
 # create the iota client
-client = iota_client.Client(mqtt_broker_options=broker_options)
+client = iota_client.Client(nodes_name_password=[[node_url]],
+                            mqtt_broker_options=broker_options)
+
 
 
 @app.route('/', methods=["GET"])
