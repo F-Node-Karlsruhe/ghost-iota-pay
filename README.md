@@ -21,7 +21,7 @@ pip install -r requirements.txt
   Default Value: _null_. Set to the IOTA Address which is owned by the blog. The application will listen there for incoming payments.
 
 - `NODE_URL`
-  Default Value: `https://api.hornet-1.testnet.chrysalis2.com`. Set to the url of your prefered node.
+  Default Value: `https://api.hornet-1.testnet.chrysalis2.com`. Set to the url of your prefered node.  
   :warning: **This is the DEV-Net. If you want to use the mainnet you should use mainnet nodes such as `https://chrysalis-nodes.iota.org`**
 
 
