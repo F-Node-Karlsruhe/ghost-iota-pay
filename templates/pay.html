@@ -15,8 +15,7 @@
             console.log('connected websocket');
             socket.emit('await_payment', {user_token_hash: '{{ user_token_hash }}'});
         });
-        socket.on('payment_received', function(msg){
-            console.log(msg)
+        socket.on('payment_received', function() {
             location.reload();
         });
 
