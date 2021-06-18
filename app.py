@@ -29,7 +29,7 @@ socket_session_ids = {}
 app.permanent_session_lifetime = timedelta(hours=int(os.getenv('SESSION_LIFETIME')))
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 # Set it to you domain
 LOG = logging.getLogger("ghost-iota-pay")
 
