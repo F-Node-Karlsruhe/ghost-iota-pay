@@ -17,9 +17,10 @@ id, secret = key.split(':')
 
 def deliver_content(slug):
     # Make an authenticated request to get a posts html
-    url = 'http://%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+    url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
     headers = {'Authorization': 'Ghost {}'.format(create_token())}
-    return requests.get(url, headers=headers).json()['posts'][0]['html']
+    article = requests.get(url, headers=headers).json()['posts'][0]
+    return {'content': article['html'], 'excerpt': article['excerpt'], 'title': article['title'], 'origin': '%s/%s' % (URL, slug)}
 
 def create_token():
     iat = int(date.now().timestamp())
@@ -32,4 +33,4 @@ def create_token():
     return jwt.encode(payload, bytes.fromhex(secret), algorithm='HS256', headers=header)
 
 def check_slug_exists(slug):
-    return requests.get('http://%s/%s' % (URL,slug)).status_code == 200
+    return requests.get('%s/%s' % (URL,slug)).status_code == 200

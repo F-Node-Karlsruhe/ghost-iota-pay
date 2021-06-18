@@ -102,7 +102,7 @@ def proxy(slug):
     
     if user_token_hash in payed_db:
 
-        return ghost.deliver_content(slug)
+        return render_template('deliver.html', data = ghost.deliver_content(slug) )
 
     return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content )
 
