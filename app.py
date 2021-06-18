@@ -51,7 +51,7 @@ known_slugs = set()
 
 
 # The node mqtt url
-node_url = 'https://chrysalis-nodes.iota.org/' # mainnet if needed
+node_url = os.getenv('NODE_URL')
 
 # The queue to store received events
 q = queue.Queue()
