@@ -96,11 +96,11 @@ def proxy(slug):
 
     # Check if user already has cookie and set one 
     if 'iota_ghost_user_token:' + slug not in session:
-        session['iota_ghost_user_token:' + slug] = secrets.token_hex(16)
-        return render_template('pay.html')
+
+        session['iota_ghost_user_token:' + slug] = secrets.token_hex(16)       
 
 	
-    user_token_hash = hashlib.sha256(session['iota_ghost_user_token:' + slug].encode('utf-8')).hexdigest()
+    user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:' + slug] + slug).encode('utf-8')).hexdigest()
     
     if user_token_hash in payed_db:
 
