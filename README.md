@@ -10,7 +10,7 @@ pip install -r requirements.txt
 ```
 
 ### Set environment variables
-Copy the evn file  
+Copy the env file  
 ```shell
 cp example.env .env
 ```
