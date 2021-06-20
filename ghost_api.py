@@ -3,6 +3,8 @@ import jwt	# pip install pyjwt
 from datetime import datetime as date
 from dotenv import load_dotenv
 import os
+import json
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -15,12 +17,33 @@ key = os.getenv('GHOST_ADMIN_KEY')
 # Split the key into ID and SECRET
 id, secret = key.split(':')
 
-def deliver_content(slug):
+def get_article(slug):
+
     # Make an authenticated request to get a posts html
-    url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+    api_url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+
+    url = '%s/%s' % (URL, slug)
+
     headers = {'Authorization': 'Ghost {}'.format(create_token())}
-    article = requests.get(url, headers=headers).json()['posts'][0]
-    return {'content': article['html'], 'excerpt': article['excerpt'], 'title': article['title'], 'origin': '%s/%s' % (URL, slug)}
+
+    data = requests.get(api_url, headers=headers).json()['posts'][0]
+
+    html = BeautifulSoup(requests.get(url).text, "html.parser")
+
+    # clear and prelace content section
+    content_section = html.find(class_='gh-content gh-canvas')
+
+    content_section.clear()
+
+    content_section.insert(0, BeautifulSoup(data['html']))
+
+    html = html.prettify()
+
+    # point to base url for original sources
+    html = html.replace('href="/', 'href="%s/' % URL).replace('src="/', 'src="%s/' % URL)
+    
+    return html
+
 
 def create_token():
     iat = int(date.now().timestamp())
