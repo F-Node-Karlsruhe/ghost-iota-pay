@@ -18,19 +18,47 @@
 
     });
 </script>>
+<div style="background: lightgray; border-radius: 10px; padding: 30px;">
     <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 100px; margin: auto;"/>
-    <h2 style="text-align: center;"">Ghost IOTA Pay</h2>
-    <h5>Please pay <strong></strong>{{ price }} IOTA</strong> to the following address and attach the displayed data.</h5>
+    <h2 style="text-align: center; margin-bottom: 50px;;">Ghost IOTA Pay</h2>
+    <p>Please pay <strong>{{ price }} IOTA</strong> to the following address and attach the displayed data.</p>
     <br>
-    <p>Address: <strong>{{ iota_address }}</strong></p>
-    <p>Data: <strong>{{ user_token_hash }}</strong></p>
+    <div style="margin: 10px 0;">
+    <p>Address:
+        <br>
+        <strong 
+        style="
+        background: white;
+        border-radius: 5px; width: 100%;
+        display: inline-block;
+        padding: 5px;"
+        >
+        {{ iota_address }}</strong>
+    </p>
+    </div>
+    <div style="margin: 10px 0;">
+    <p>Data:
+        <br>
+        <strong
+        style="
+        background: white;
+        border-radius: 5px; width: 100%;
+        display: inline-block;
+        padding: 5px;"
+        >
+        {{ user_token_hash }}</strong>
+    </p>
+    </div>
     <br>
-
+    <div style="text-align: center;">
+    <h5>
     <a style="color: white;
             text-decoration: none;
-            margin: auto;
             background: rgb(49, 113, 197);
             padding: 5px; border-radius: 5px;"
             href="iota://wallet/send/{{iota_address}}?amt={{price}}">
                 Firefly wallet
     </a>
+    </h5>
+    </div>
+</div>
