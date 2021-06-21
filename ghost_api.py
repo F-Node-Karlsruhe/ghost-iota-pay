@@ -30,6 +30,9 @@ def get_post(slug):
 
     content_section.clear()
 
+    # clear pay link button
+    html.find('h5', {'id':'ghost-iota-pay-link'}).clear()
+
     # insert the actual post content
     content_section.insert(0, BeautifulSoup(data['html']))
 
@@ -57,7 +60,7 @@ def get_post_payment(slug, pay_html):
 
     content_section.clear()
 
-    # clear link button
+    # clear pay link button
     html.find('h5', {'id':'ghost-iota-pay-link'}).clear()
 
     #clear article image
