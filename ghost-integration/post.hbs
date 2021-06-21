@@ -47,7 +47,7 @@ into the {body} tag of the default.hbs template --}}
                 </div>
                 <!-- Integrate this into the post.hbs of your theme -->
                 {{#has visibility="paid"}}
-                    <h5><a style="color: white; padding: 6px; margin-left: 15px; background: black; border-radius: 5px;" href="{{ghost-iota-pay-url}}">Pay with IOTA</a></h5>
+                    <h5 id="ghost-iota-pay-link"><a style="color: white; padding: 6px; margin-left: 15px; background: black; border-radius: 5px;" href="{{ghost-iota-pay-url}}{{slug}}">Pay with IOTA</a></h5>
                 {{/has}}
                 <!-- up to here -->
             </section>

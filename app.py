@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, session
+from flask import Flask, render_template, request, make_response, session, send_from_directory
 import logging
 import secrets
 import hashlib
@@ -77,6 +77,11 @@ client = iota_client.Client(nodes_name_password=[[node_url]],
 def welcome():
     return render_template('welcome.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico')
+
 @app.route('/<slug>', methods=["GET"])
 def proxy(slug):
 
@@ -104,9 +109,9 @@ def proxy(slug):
     
     if user_token_hash in payed_db:
 
-        return ghost.get_article(slug)
+        return ghost.get_post(slug)
 
-    return render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content )
+    return ghost.get_post_payment(slug, render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content ))
 
 
 # socket endpoint to receive payment event

@@ -17,16 +17,11 @@ key = os.getenv('GHOST_ADMIN_KEY')
 # Split the key into ID and SECRET
 id, secret = key.split(':')
 
-def get_article(slug):
-
-    # Make an authenticated request to get a posts html
-    api_url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+def get_post(slug):
 
     url = '%s/%s' % (URL, slug)
 
-    headers = {'Authorization': 'Ghost {}'.format(create_token())}
-
-    data = requests.get(api_url, headers=headers).json()['posts'][0]
+    data = get_post_data(slug)
 
     html = BeautifulSoup(requests.get(url).text, "html.parser")
 
@@ -35,6 +30,7 @@ def get_article(slug):
 
     content_section.clear()
 
+    # insert the actual post content
     content_section.insert(0, BeautifulSoup(data['html']))
 
     html = html.prettify()
@@ -43,6 +39,46 @@ def get_article(slug):
     html = html.replace('href="/', 'href="%s/' % URL).replace('src="/', 'src="%s/' % URL)
     
     return html
+
+def get_post_payment(slug, pay_html):
+
+    url = '%s/%s' % (URL, slug)
+
+    # get base ressource
+    html = requests.get(url).text
+
+    # point to base url for original sources
+    html = html.replace('href="/', 'href="%s/' % URL).replace('src="/', 'src="%s/' % URL)
+
+    html = BeautifulSoup(html, "html.parser")
+
+    # clear content section
+    content_section = html.find('section', {'class':'gh-content gh-canvas'})
+
+    content_section.clear()
+
+    # clear link button
+    html.find('h5', {'id':'ghost-iota-pay-link'}).clear()
+
+    #clear article image
+    html.find('figure', {'class':'article-image'}).clear()
+
+    # insert the actual post content
+    content_section.insert(0, BeautifulSoup(pay_html, "html.parser"))
+
+    html = html.prettify()
+
+    return html
+
+
+def get_post_data(slug):
+
+    # Make an authenticated request to get a posts html
+    api_url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+
+    headers = {'Authorization': 'Ghost {}'.format(create_token())}
+
+    return requests.get(api_url, headers=headers).json()['posts'][0]
 
 
 def create_token():
