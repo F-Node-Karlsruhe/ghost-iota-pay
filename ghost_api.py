@@ -36,6 +36,10 @@ def get_post(slug):
     # insert the actual post content
     content_section.insert(0, BeautifulSoup(data['html'], "html.parser"))
 
+    for img in html.findAll('img', attrs = {'srcset' : True}):
+
+        img['srcset'] = img['srcset'].replace('/content', '%s/content' % URL)
+
     html = html.prettify()
 
     # point to base url for original sources
@@ -67,7 +71,7 @@ def get_post_payment(slug, pay_html):
     article_image = html.find('figure', {'class':'article-image'})
 
     if article_image is not None:
-        
+
         article_image.clear()
 
     # insert the actual post content
