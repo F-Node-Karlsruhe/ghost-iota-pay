@@ -179,7 +179,7 @@ if __name__ == '__main__':
 
         # sadly this all has to run in the same script
         socketio.start_background_task(mqtt)
-        socketio.run(app)
+        socketio.run(app, host='0.0.0.0')
 
         # Stop server
         LOG.info('Stopping ...')
