@@ -64,7 +64,11 @@ def get_post_payment(slug, pay_html):
     html.find('h5', {'id':'ghost-iota-pay-link'}).clear()
 
     #clear article image
-    html.find('figure', {'class':'article-image'}).clear()
+    article_image = html.find('figure', {'class':'article-image'})
+
+    if article_image is not None:
+        
+        article_image.clear()
 
     # insert the actual post content
     content_section.insert(0, BeautifulSoup(pay_html, "html.parser"))
