@@ -1,9 +1,10 @@
 <p align="center">
     <img src="static/logo.png" width="140px" alt="ghost-iota-pay" />
-</p>  
+</p>. 
 
 # ghost-iota-pay
-Pay per content in ghost blog with IOTA
+Pay per content in ghost blog with IOTA. 
+Test it here: ([blog.f-node.de](https://blog.f-node.de))
 
 ![How it should work](./flowchart.svg)
 
