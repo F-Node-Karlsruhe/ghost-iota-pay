@@ -46,4 +46,24 @@ This will serve the app on port 5000.
 
 ## Usage
 When offering payed articles on your ghost blog just add a link on the subscribtion form which points to `https://your-ghost-iota-pay-domain.com/{slug}` where slug is the slug of the requested article.
-After the payment the article is fetched through the admin API and served to the user.
+After the payment the article is fetched through the admin API and served to the user.  
+
+## Integration in ghost
+Put the following code into the `post.hbs` of your ghost theme and replace `{{ghost-iota-pay-url}}` with the url of your ghost-iota-pay gateway:  
+```handlebars
+{{#has visibility="paid"}}
+    <h5 id="ghost-iota-pay-link">
+        <a style=
+           "color: white;
+            padding: 6px;
+            margin-left: 15px;
+            background: black;
+            border-radius: 5px;" 
+            href="{{ghost-iota-pay-url}}{{slug}}"
+            >
+                Pay with IOTA
+        </a>
+    </h5>
+ {{/has}}
+```
+Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)
