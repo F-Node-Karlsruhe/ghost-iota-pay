@@ -34,7 +34,7 @@ def get_post(slug):
     html.find('h5', {'id':'ghost-iota-pay-link'}).clear()
 
     # insert the actual post content
-    content_section.insert(0, BeautifulSoup(data['html']))
+    content_section.insert(0, BeautifulSoup(data['html'], "html.parser"))
 
     html = html.prettify()
 
