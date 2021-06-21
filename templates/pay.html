@@ -20,7 +20,10 @@
 </script>>
 <div style="background: lightgray; border-radius: 10px; padding: 30px;">
     <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 100px; margin: auto;"/>
-    <h2 style="text-align: center; margin-bottom: 50px;;">Ghost IOTA Pay</h2>
+    <h2 style="text-align: center; margin-bottom: 50px;;">
+        Ghost IOTA Pay
+        <a style="display: block; width: 16px; margin: 16px auto;" href="https://github.com/F-Node-Karlsruhe/ghost-iota-pay"><img width="16" src="{{ url_for('static', filename='github.png') }}"/></a>
+    </h2>
     <p>Please pay <strong>{{ price }} IOTA</strong> to the following address and attach the displayed data.</p>
     <br>
     <div style="margin: 10px 0;">
