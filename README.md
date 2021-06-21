@@ -44,6 +44,20 @@ python -m flask run
 ```
 This will serve the app on port 5000.
 
+## Running ghost-iota-pay in Docker
+
+Build the image
+```shell
+docker build --tag ghost-iota-pay .
+```
+
+Run the image as container
+```shell
+docker run -p 5000:5000 ghost-iota-pay
+```
+
+This will serve the app on port 5000.
+
 ## Usage
 When offering payed articles on your ghost blog just add a link on the subscribtion form which points to `https://your-ghost-iota-pay-domain.com/{slug}` where slug is the slug of the requested article.
 After the payment the article is fetched through the admin API and served to the user.  
