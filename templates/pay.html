@@ -17,7 +17,30 @@
         });
 
     });
-</script>>
+</script>
+<style>
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 8px solid #3171c5;
+      width: 80px;
+      height: 80px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+      margin: auto;
+    }
+    
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+</style>
 <div style="background: lightgray; border-radius: 10px; padding: 30px;">
     <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 100px; margin: auto;"/>
     <h2 style="text-align: center; margin-bottom: 50px;;">
@@ -54,10 +77,12 @@
     </div>
     <br>
     <div style="text-align: center;">
+        <div class="loader"></div>
+        <p style="font-size: small;">Waiting for payment ...</p>
     <h5>
     <a style="color: white;
             text-decoration: none;
-            background: rgb(49, 113, 197);
+            background: #3171c5;
             padding: 5px; border-radius: 5px;"
             href="iota://wallet/send/{{iota_address}}?amt={{price}}">
                 Firefly wallet
