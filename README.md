@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="static/logo.png" width="140px" alt="ghost-iota-pay" />
+</p>  
+
 # ghost-iota-pay
 Pay per content in ghost blog with IOTA
 
@@ -8,6 +12,10 @@ Pay per content in ghost blog with IOTA
 ```shell
 pip install -r requirements.txt
 ```
+If python does not find the iota client install it from the wheel file
+```shell
+pip install iota_client_python-0.2.0_alpha.3-cp36-abi3-linux_x86_64.whl
+``` 
 
 ### Set environment variables
 Copy the env file  
