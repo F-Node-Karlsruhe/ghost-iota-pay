@@ -145,20 +145,24 @@ def mqtt_worker():
 
         # break work routine
         if item is STOP: break
-        event = json.loads(item)
+        try:
+            event = json.loads(item)
 
-        message = client.get_message_data(json.loads(event['payload'])['messageId'])
+            message = client.get_message_data(json.loads(event['payload'])['messageId'])
 
-        if check_payment(message):
-            # this must be easier to access within value transfers
-            user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
+            if check_payment(message):
+                # this must be easier to access within value transfers
+                user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-            payed_db.add(user_token_hash)         
+                payed_db.add(user_token_hash)         
 
-            if user_token_hash in socket_session_ids.keys():
+                if user_token_hash in socket_session_ids.keys():
 
-                # emit pamyent received event to the user
-                socketio.emit('payment_received', room=socket_session_ids.pop(user_token_hash))
+                    # emit pamyent received event to the user
+                    socketio.emit('payment_received', room=socket_session_ids.pop(user_token_hash))
+        
+        except Exception as e:
+            LOG.warning(e)
 
         q.task_done()
 
