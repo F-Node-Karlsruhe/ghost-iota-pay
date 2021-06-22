@@ -24,9 +24,7 @@ socketio = SocketIO(app, async_mode='threading')
 
 socket_session_ids = {}
 
-# restrict the access time for the user
-# comment out for infinite
-app.permanent_session_lifetime = timedelta(hours=int(os.getenv('SESSION_LIFETIME')))
+session_lifetime = int(os.getenv('SESSION_LIFETIME'))
 
 
 logging.basicConfig(level=logging.INFO)
@@ -85,6 +83,13 @@ def favicon():
 @app.route('/<slug>', methods=["GET"])
 def proxy(slug):
 
+    # make session persistent
+    session.permanent = True
+
+    # restrict the access time for the user
+    # comment out for infinite
+    app.permanent_session_lifetime = timedelta(hours=session_lifetime)
+
     # Check if slug exists and add to db
     if slug not in known_slugs:
 
@@ -115,7 +120,6 @@ def proxy(slug):
 
 
 # socket endpoint to receive payment event
-# strangely the dict does not persist the ids
 @socketio.on('await_payment')
 def await_payment(data):
 
@@ -181,7 +185,7 @@ def check_payment(message):
 
 if __name__ == '__main__':
 
-        # sadly this all has to run in the same script
+        # sadly this all has to run in the same script to make socketio work with threads
         socketio.start_background_task(mqtt)
         socketio.run(app, host='0.0.0.0')
 
