@@ -70,6 +70,11 @@ def get_post_payment(slug, pay_html):
     #clear article image
     article_image = html.find('figure', {'class':'article-image'})
 
+    # handle srcset
+    for img in html.findAll('img', attrs = {'srcset' : True}):
+
+        img['srcset'] = img['srcset'].replace('/content', '%s/content' % URL)
+
     if article_image is not None:
 
         article_image.clear()
