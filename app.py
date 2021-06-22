@@ -69,7 +69,16 @@ broker_options = {
 client = iota_client.Client(nodes_name_password=[[node_url]],
                             mqtt_broker_options=broker_options)
 
+@app.before_request
+def make_session_permanent():
+    
+    # make session persistent
+    session.permanent = True
 
+    # restrict the access time for the user
+    # comment out for infinite
+    app.permanent_session_lifetime = timedelta(hours=session_lifetime)
+    
 
 @app.route('/', methods=["GET"])
 def welcome():
@@ -82,13 +91,6 @@ def favicon():
 
 @app.route('/<slug>', methods=["GET"])
 def proxy(slug):
-
-    # make session persistent
-    session.permanent = True
-
-    # restrict the access time for the user
-    # comment out for infinite
-    app.permanent_session_lifetime = timedelta(hours=session_lifetime)
 
     # Check if slug exists and add to db
     if slug not in known_slugs:
