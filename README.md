@@ -55,7 +55,7 @@ docker build --tag ghost-iota-pay .
 
 Run the image as container
 ```shell
-docker run -p 5000:5000 ghost-iota-pay
+docker run -p 5000:5000 -v /$(pwd)/db:/app/db ghost-iota-pay
 ```
 
 This will serve the app on port 5000.
