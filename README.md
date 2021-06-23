@@ -1,6 +1,6 @@
 <p align="center">
     <img src="static/logo.png" width="140px" alt="ghost-iota-pay" />
-</p>. 
+</p>  
 
 # ghost-iota-pay
 Pay per content in ghost blog with IOTA.  
