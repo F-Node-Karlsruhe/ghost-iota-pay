@@ -3,8 +3,9 @@
 </p>. 
 
 # ghost-iota-pay
-Pay per content in ghost blog with IOTA. 
-Test it here: ([blog.f-node.de](https://blog.f-node.de))
+Pay per content in ghost blog with IOTA.  
+Test it here: ([blog.f-node.de](https://blog.f-node.de))  
+Watch it here: ([https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A))
 
 ![How it should work](./flowchart.svg)
 
