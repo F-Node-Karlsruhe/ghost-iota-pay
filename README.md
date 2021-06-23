@@ -42,7 +42,7 @@ Alter the following variables:
 
 ### Run the app
 ```shell
-python -m flask run
+python app.py
 ```
 This will serve the app on port 5000.
 
