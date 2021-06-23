@@ -10,7 +10,7 @@ from flask_socketio import SocketIO
 import iota_client
 import json
 import queue
-import time
+import pickle
 
 
 load_dotenv()
@@ -42,7 +42,13 @@ iota_address= os.getenv('IOTA_ADDRESS')
 price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
 # register all paying user token hashes
-payed_db = set()
+paid_db = set()
+try:
+    with open('db/paid_db.pkl','rb') as db:
+        paid_db = pickle.load(db)
+        LOG.info('Successfully loaded paid_db')
+except OSError:
+    pass
 
 # keep tracl of valid slugs
 known_slugs = set()
@@ -78,7 +84,7 @@ def make_session_permanent():
     # restrict the access time for the user
     # comment out for infinite
     app.permanent_session_lifetime = timedelta(hours=session_lifetime)
-    
+
 
 @app.route('/', methods=["GET"])
 def welcome():
@@ -114,7 +120,7 @@ def proxy(slug):
 	
     user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:' + slug] + slug).encode('utf-8')).hexdigest()
     
-    if user_token_hash in payed_db:
+    if user_token_hash in paid_db:
 
         return ghost.get_post(slug)
 
@@ -160,7 +166,7 @@ def mqtt_worker():
                 # this must be easier to access within value transfers
                 user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-                payed_db.add(user_token_hash)         
+                paid_db.add(user_token_hash)         
 
                 if user_token_hash in socket_session_ids.keys():
 
@@ -199,3 +205,9 @@ if __name__ == '__main__':
         LOG.info('MQTT client stopped')
         q.queue.clear()
         LOG.info('Working queue cleared')
+        try:
+            with open('./db/paid_db.pkl','wb') as db:
+                pickle.dump(paid_db, db)
+                LOG.info('Successfully persisted paid_db')
+        except OSError as ose:
+            LOG.error('Could not safe paid_db', ose)
