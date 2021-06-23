@@ -67,18 +67,23 @@ After the payment the article is fetched through the admin API and served to the
 Put the following code into the `post.hbs` of your ghost theme and replace `{{ghost-iota-pay-url}}` with the url of your ghost-iota-pay gateway:  
 ```handlebars
 {{#has visibility="paid"}}
-    <h5 id="ghost-iota-pay-link">
-        <a style=
-           "color: white;
+    <button id="ghost-iota-pay-link" 
+        style="
             padding: 6px;
             margin-left: 15px;
             background: black;
-            border-radius: 5px;" 
-            href="{{ghost-iota-pay-url}}{{slug}}"
-            >
-                Pay with IOTA
-        </a>
-    </h5>
- {{/has}}
+            border-radius: 5px;">
+                <a style="color: white;" 
+                    href="{{ghost-iota-pay-url}}{{slug}}">
+                        Buy with 
+                        <img style="
+                            display: inline-block;
+                            height:25px;
+                            margin-top: -3px;" 
+                            src="https://www.iota.org/logo-icon-light.svg"
+                            alt="IOTA"/>
+                </a>
+   </button>
+{{/has}}
 ```
 Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)

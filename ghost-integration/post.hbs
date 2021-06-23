@@ -47,7 +47,24 @@ into the {body} tag of the default.hbs template --}}
                 </div>
                 <!-- Integrate this into the post.hbs of your theme -->
                 {{#has visibility="paid"}}
-                    <h5 id="ghost-iota-pay-link"><a style="color: white; padding: 6px; margin-left: 15px; background: black; border-radius: 5px;" href="{{ghost-iota-pay-url}}{{slug}}">Pay with IOTA</a></h5>
+                    <button id="ghost-iota-pay-link" 
+                            style="
+                                padding: 6px;
+                                margin-left: 15px;
+                                background: black;
+                                border-radius: 5px;">
+                        <a style="color: white;" 
+                            href="{{ghost-iota-pay-url}}{{slug}}">
+                                Buy with 
+                                <img style="
+                                    display: inline-block;
+                                    height:25px;
+                                    margin-top: -3px;" 
+                                    src="https://www.iota.org/logo-icon-light.svg"
+                                    alt="IOTA"
+                                />
+                        </a>
+                    </button>
                 {{/has}}
                 <!-- up to here -->
             </section>
