@@ -69,7 +69,6 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
 {{#has visibility="paid"}}
     <button id="ghost-iota-pay-link" 
         style="
-            padding: 6px;
             margin-left: 15px;
             background: black;
             border-radius: 5px;">
