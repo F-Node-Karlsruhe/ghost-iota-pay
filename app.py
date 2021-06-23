@@ -20,7 +20,7 @@ app = Flask(__name__.split('.')[0])
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # create web socket for async communication
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
 
 socket_session_ids = {}
 
