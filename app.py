@@ -25,6 +25,10 @@ socket_session_ids = {}
 
 session_lifetime = int(os.getenv('SESSION_LIFETIME'))
 
+# expand default 31 days session lifetime if neccessary
+if session_lifetime > 744:
+    app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=session_lifetime)
+
 
 logging.basicConfig(level=logging.INFO)
 # Set it to you domain
@@ -49,7 +53,7 @@ try:
 except OSError:
     pass
 
-# keep tracl of valid slugs
+# keep track of valid slugs
 known_slugs = set()
 
 # The node mqtt url
