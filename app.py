@@ -5,12 +5,11 @@ import hashlib
 import ghost_api as ghost
 from dotenv import load_dotenv
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 import iota_client
 import json
 import queue
-import pickle
 
 
 load_dotenv()
@@ -42,17 +41,16 @@ iota_address= os.getenv('IOTA_ADDRESS')
 price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
 # register all paying user token hashes
-paid_db = set()
+paid_db = {}
 try:
-    with open('db/paid_db.pkl','rb') as db:
-        paid_db = pickle.load(db)
+    with open('db/paid_db.pkl','r') as db:
+        paid_db = json.load(db)
         LOG.info('Successfully loaded paid_db')
 except OSError:
     pass
 
 # keep tracl of valid slugs
 known_slugs = set()
-
 
 # The node mqtt url
 node_url = os.getenv('NODE_URL')
@@ -80,10 +78,6 @@ def make_session_permanent():
     
     # make session persistent
     session.permanent = True
-
-    # restrict the access time for the user
-    # comment out for infinite
-    app.permanent_session_lifetime = timedelta(hours=session_lifetime)
 
 
 @app.route('/', methods=["GET"])
@@ -113,16 +107,22 @@ def proxy(slug):
     
 
     # Check if user already has cookie and set one 
-    if 'iota_ghost_user_token:' + slug not in session:
+    if 'iota_ghost_user_token:' not in session:
 
-        session['iota_ghost_user_token:' + slug] = secrets.token_hex(16)       
+        session['iota_ghost_user_token:'] = secrets.token_hex(16)       
 
 	
-    user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:' + slug] + slug).encode('utf-8')).hexdigest()
+    user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:'] + slug).encode('utf-8')).hexdigest()
     
-    if user_token_hash in paid_db:
+    if user_token_hash in paid_db.keys():
 
-        return ghost.get_post(slug)
+        if datetime.fromisoformat(paid_db[user_token_hash]) > datetime.now():
+
+            return ghost.get_post(slug)
+        
+        exp_date = paid_db.pop(user_token_hash)
+
+        return make_response('Access expired at %s' % exp_date)
 
     return ghost.get_post_payment(slug, render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content ))
 
@@ -166,7 +166,7 @@ def mqtt_worker():
                 # this must be easier to access within value transfers
                 user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-                paid_db.add(user_token_hash)         
+                paid_db[user_token_hash] = (datetime.now() + timedelta(hours = session_lifetime)).isoformat()
 
                 if user_token_hash in socket_session_ids.keys():
 
@@ -191,6 +191,12 @@ def check_payment(message):
 
     return False
 
+def clear_db():
+    now = datetime.now()
+    for hash, exp in list(paid_db.items()):
+        if datetime.fromisoformat(exp) < now:
+            del paid_db[hash]
+
 if __name__ == '__main__':
 
         # sadly this all has to run in the same script to make socketio work with threads
@@ -206,8 +212,9 @@ if __name__ == '__main__':
         q.queue.clear()
         LOG.info('Working queue cleared')
         try:
-            with open('./db/paid_db.pkl','wb') as db:
-                pickle.dump(paid_db, db)
+            clear_db()
+            with open('./db/paid_db.pkl','w') as db:
+                json.dump(paid_db, db)
                 LOG.info('Successfully persisted paid_db')
         except OSError as ose:
             LOG.error('Could not safe paid_db', ose)
