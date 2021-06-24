@@ -1,18 +1,18 @@
 <p align="center">
-    <img src="static/logo.png" width="140px" alt="ghost-iota-pay" />
+    <img src="https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/static/logo.png" width="140px" alt="ghost-iota-pay" />
 </p>  
 
 # ghost-iota-pay
 [![Docker](https://img.shields.io/docker/pulls/fnode/ghost-iota-pay.svg)](https://hub.docker.com/r/fnode/ghost-iota-pay/)
 [![Docker](https://img.shields.io/docker/stars/fnode/ghost-iota-pay.svg)](https://hub.docker.com/r/fnode/ghost-iota-pay/)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/mide/F-Node-Karlsruhe/ghost-iota-pay/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/F-Node-Karlsruhe/ghost-iota-pay.svg)](https://github.com/F-Node-Karlsruhe/ghost-iota-pay/issues)  
 **Pay per content in ghost blog with IOTA.**  
 
 Test it here: ([blog.f-node.de](https://blog.f-node.de))  
 Watch it here: ([https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A))
 
-![How it works](./flowchart.svg)
+![How it works](https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/images/flowchart.svg)
 
 ## Running ghost-iota-pay
 ### Install requirements

@@ -229,3 +229,4 @@ if __name__ == '__main__':
                 LOG.info('Successfully persisted paid_db')
         except OSError as ose:
             LOG.error('Could not safe paid_db', ose)
+            

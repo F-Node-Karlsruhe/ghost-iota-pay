@@ -1,0 +1,10 @@
+*.md
+ghost-integration/
+images/
+__pycache__/
+.github/
+.gitignore
+example.env
+
+test_wallet.py
+

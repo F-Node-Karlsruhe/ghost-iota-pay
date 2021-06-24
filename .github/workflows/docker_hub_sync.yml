@@ -1,0 +1,20 @@
+name: Docker Hub Sync
+on:
+  push:
+    paths:
+      - README.md
+      - .github/workflows/docker_hub_sync.yml
+
+jobs:
+  docker-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: meeDamian/sync-readme@v1.0.6
+        with:
+          user: fnode
+          pass: ${{ secrets.DOCKER_PASSWORD }}
+          readme: ./README.md
+          description: true
+          slug: fnode/ghost-iota-pay
