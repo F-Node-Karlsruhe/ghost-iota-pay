@@ -109,3 +109,10 @@ def create_token():
 
 def check_slug_exists(slug):
     return requests.get('%s/%s' % (URL,slug)).status_code == 200
+
+def check_slug_is_paid(slug):
+    api_url = '%s/ghost/api/v3/admin/posts/slug/%s' % (URL, slug)
+
+    headers = {'Authorization': 'Ghost {}'.format(create_token())}
+
+    return requests.get(api_url, headers=headers).json()['posts'][0]['visibility'] == 'paid'

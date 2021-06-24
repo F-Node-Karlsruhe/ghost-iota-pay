@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, session, send_from_directory
+from flask import Flask, render_template, request, make_response, session, send_from_directory, redirect
 import logging
 import secrets
 import hashlib
@@ -97,9 +97,16 @@ def proxy(slug):
 
         if ghost.check_slug_exists(slug):
 
-            known_slugs.add(slug)
+            if ghost.check_slug_is_paid(slug):
 
-            LOG.debug("Added slug %s to db", slug)
+                known_slugs.add(slug)
+
+                LOG.debug("Added slug %s to db", slug)
+
+            else:
+
+                # redirect if post is free
+                return redirect('%s/%s' % (ghost.URL, slug))
 
         else:
 
