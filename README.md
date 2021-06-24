@@ -12,7 +12,7 @@
 Test it here: ([blog.f-node.de](https://blog.f-node.de))  
 Watch it here: ([https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A))
 
-![How it should work](./flowchart.svg)
+![How it works](./flowchart.svg)
 
 ## Running ghost-iota-pay
 ### Install requirements
@@ -51,7 +51,10 @@ python app.py
 ```
 This will serve the app on port 5000.
 
-## Running ghost-iota-pay in Docker
+## Run ghost-iota-pay with Docker
+### Build and run ghost-iota-pay with Docker
+
+**Make sure that the [.env](#set-environment-variables) file exists**
 
 Build the image
 ```shell
@@ -60,7 +63,25 @@ docker build --tag ghost-iota-pay .
 
 Run the image as container
 ```shell
-docker run -p 5000:5000 -v /$(pwd)/db:/app/db ghost-iota-pay
+docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db ghost-iota-pay
+```
+
+### Run ghost-iota-pay with Docker from repository
+
+**Make sure that the [.env](#set-environment-variables) file exists**
+
+Run image from repository
+```shell
+docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db --env-file ./.env fnode/ghost-iota-pay
+```
+
+### Run ghost-iota-pay with docker-compose
+
+**Make sure that the [.env](#set-environment-variables) file exists**
+
+Run image from repository
+```shell
+docker-compose up
 ```
 
 This will serve the app on port 5000.

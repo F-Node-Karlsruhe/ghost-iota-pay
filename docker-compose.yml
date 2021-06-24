@@ -1,8 +1,12 @@
 version: "3.9"
 services:
   ghost-iota-pay:
-    build: .
+    image: fnode/ghost-iota-pay
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     volumes:
       - ./db:/app/db
+    stop_signal: SIGINT
+    restart: unless-stopped
