@@ -47,7 +47,7 @@ price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 # register all paying user token hashes
 paid_db = {}
 try:
-    with open('db/paid_db.pkl','r') as db:
+    with open('db/paid_db.json','r') as db:
         paid_db = json.load(db)
         LOG.info('Successfully loaded paid_db')
 except OSError:
@@ -224,7 +224,7 @@ if __name__ == '__main__':
         LOG.info('Working queue cleared')
         try:
             clear_db()
-            with open('./db/paid_db.pkl','w') as db:
+            with open('./db/paid_db.json','w') as db:
                 json.dump(paid_db, db)
                 LOG.info('Successfully persisted paid_db')
         except OSError as ose:
