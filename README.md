@@ -9,8 +9,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/F-Node-Karlsruhe/ghost-iota-pay.svg)](https://github.com/F-Node-Karlsruhe/ghost-iota-pay/issues)  
 **Pay per content in ghost blog with IOTA.**  
 
-Test it here: ([blog.f-node.de](https://blog.f-node.de))  
-Watch it here: ([https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A))
+Test it here: [blog.f-node.de](https://blog.f-node.de)  
+Watch it here: [https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A)  
 
 ![How it works](https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/images/flowchart.svg)
 
