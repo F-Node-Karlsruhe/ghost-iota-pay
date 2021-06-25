@@ -1,15 +1,28 @@
-from flask import Flask, render_template, request, make_response, session, send_from_directory, redirect
 import logging
 import secrets
 import hashlib
 import ghost_api as ghost
 from dotenv import load_dotenv
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 from flask_socketio import SocketIO
 import iota_client
 import json
 import queue
+from flask import (Flask,
+                    render_template,
+                    request,
+                    make_response,
+                    session,
+                    send_from_directory,
+                    redirect)
+from data import (user_token_hash_exists,
+                    user_token_hash_valid,
+                    is_slug_unknown, 
+                    add_to_known_slugs,
+                    add_to_paid_db,
+                    pop_from_paid_db,
+                    stop_db)
 
 
 load_dotenv()
@@ -21,6 +34,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # create web socket for async communication
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
 
+# link user_token_hashes to session ids
 socket_session_ids = {}
 
 session_lifetime = int(os.getenv('SESSION_LIFETIME'))
@@ -44,17 +58,6 @@ iota_address= os.getenv('IOTA_ADDRESS')
 # price per content
 price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
-# register all paying user token hashes
-paid_db = {}
-try:
-    with open('db/paid_db.json','r') as db:
-        paid_db = json.load(db)
-        LOG.info('Successfully loaded paid_db')
-except OSError:
-    pass
-
-# keep track of valid slugs
-known_slugs = set()
 
 # The node mqtt url
 node_url = os.getenv('NODE_URL')
@@ -88,7 +91,7 @@ def make_session_permanent():
 def welcome():
     return render_template('welcome.html')
 
-@app.route('/favicon.ico')
+@app.route('/favicon.ico', methods=["GET"])
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico')
@@ -97,13 +100,13 @@ def favicon():
 def proxy(slug):
 
     # Check if slug exists and add to db
-    if slug not in known_slugs:
+    if is_slug_unknown(slug):
 
         if ghost.check_slug_exists(slug):
 
             if ghost.check_slug_is_paid(slug):
 
-                known_slugs.add(slug)
+                add_to_known_slugs(slug)
 
                 LOG.debug("Added slug %s to db", slug)
 
@@ -125,13 +128,13 @@ def proxy(slug):
 	
     user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:'] + slug).encode('utf-8')).hexdigest()
     
-    if user_token_hash in paid_db.keys():
+    if user_token_hash_exists(user_token_hash):
 
-        if datetime.fromisoformat(paid_db[user_token_hash]) > datetime.now():
+        if user_token_hash_valid(user_token_hash):
 
             return ghost.get_post(slug)
         
-        exp_date = paid_db.pop(user_token_hash)
+        exp_date = pop_from_paid_db(user_token_hash)
 
         return make_response('Access expired at %s' % exp_date)
 
@@ -177,7 +180,7 @@ def mqtt_worker():
                 # this must be easier to access within value transfers
                 user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-                paid_db[user_token_hash] = (datetime.now() + timedelta(hours = session_lifetime)).isoformat()
+                add_to_paid_db(user_token_hash, session_lifetime)
 
                 if user_token_hash in socket_session_ids.keys():
 
@@ -202,11 +205,6 @@ def check_payment(message):
 
     return False
 
-def clear_db():
-    now = datetime.now()
-    for hash, exp in list(paid_db.items()):
-        if datetime.fromisoformat(exp) < now:
-            del paid_db[hash]
 
 if __name__ == '__main__':
 
@@ -222,11 +220,6 @@ if __name__ == '__main__':
         LOG.info('MQTT client stopped')
         q.queue.clear()
         LOG.info('Working queue cleared')
-        try:
-            clear_db()
-            with open('./db/paid_db.json','w') as db:
-                json.dump(paid_db, db)
-                LOG.info('Successfully persisted paid_db')
-        except OSError as ose:
-            LOG.error('Could not safe paid_db', ose)
+        stop_db()
+        
             
