@@ -22,7 +22,10 @@ from data import (user_token_hash_exists,
                     add_to_known_slugs,
                     add_to_paid_db,
                     pop_from_paid_db,
-                    stop_db)
+                    stop_db,
+                    get_iota_address,
+                    get_iota_listening_addresses,
+                    is_own_address)
 
 
 load_dotenv()
@@ -51,9 +54,6 @@ LOG = logging.getLogger("ghost-iota-pay")
 
 # init iota client
 iota = iota_client.Client()
-
-# iota address for transfers
-iota_address= os.getenv('IOTA_ADDRESS')
 
 # price per content
 price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
@@ -138,7 +138,9 @@ def proxy(slug):
 
         return make_response('Access expired at %s' % exp_date)
 
-    return ghost.get_post_payment(slug, render_template('pay.html', user_token_hash = user_token_hash, iota_address = iota_address, price = price_per_content ))
+    return ghost.get_post_payment(slug, render_template('pay.html', user_token_hash = user_token_hash,
+                                                        iota_address = get_iota_address(slug),
+                                                        price = price_per_content ))
 
 
 # socket endpoint to receive payment event
@@ -159,8 +161,12 @@ def on_mqtt_event(event):
 
 
 def mqtt():
-    client.subscribe_topics(['addresses/%s/outputs' % iota_address], on_mqtt_event)
+    client.subscribe_topics(get_iota_listening_addresses(), on_mqtt_event)
     mqtt_worker()
+
+
+def add_listening_address(iota_address):
+    client.subscribe_topic('addresses/%s/outputs' % iota_address, on_mqtt_event)
 
 
 def mqtt_worker():
@@ -197,7 +203,7 @@ def check_payment(message):
 
     for output in message['payload']['transaction'][0]['essence']['outputs']:
 
-        if output['signature_locked_single']['address'] == iota_address:
+        if is_own_address(output['signature_locked_single']['address']):
 
             if output['signature_locked_single']['amount'] >= price_per_content:
 
