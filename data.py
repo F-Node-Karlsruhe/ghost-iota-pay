@@ -17,7 +17,7 @@ PATH = './db/'
 # iota address for transfers
 IOTA_ADDRESS= os.getenv('IOTA_ADDRESS')
 
-AUTHOR_ADDRESSES= bool(os.getenv('AUTHOR_ADDRESSES'))
+AUTHOR_ADDRESSES= os.getenv('AUTHOR_ADDRESSES') == 'true'
 
 # register all paying user token hashes
 paid_db = {}
