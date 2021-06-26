@@ -25,11 +25,11 @@ pip install iota_client_python-0.2.0_alpha.3-cp36-abi3-linux_x86_64.whl
 ``` 
 
 ### Set environment variables
-Copy the env file  
+Copy the `.env` file  
 ```shell
 cp example.env .env
 ```
-Alter the following variables:  
+Alter the following variables in the `.env` file:  
 
 - `URL`
   Default Value: `http://localhost:2365` . Set to the url of the ghost blog which shall be fetched.
@@ -87,7 +87,7 @@ docker-compose up
 This will serve the app on port 5000.
 
 ## Usage
-When offering payed articles on your ghost blog just add a link on the subscribtion form which points to `https://your-ghost-iota-pay-domain.com/{slug}` where slug is the slug of the requested article.
+When offering payed articles on your ghost blog just add a link on the subscribtion form which points to `https://your-ghost-iota-pay-domain.com/{{slug}}` where slug is the slug of the requested article.
 After the payment the article is fetched through the admin API and served to the user.  
 
 ## Integration in ghost
@@ -115,9 +115,9 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
 Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)
 
 # Author address setup
-You can set `AUTHOR_ADDRESSES=true` in you env to allow authors to get paid individually.
-If so, the athor can paste in their current IOTA address in the `location` field in their ghost admin panel.  
-When an article is fetched, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
+You can set `AUTHOR_ADDRESSES=true` in your `.env` file to allow authors to get paid individually.
+If so, the authors can paste in their current IOTA address in the `location` field in their ghost admin panel.  
+When an article is requested, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
 
 **Improvement**
 As an IOTA address is quite ugly in the location field of the author, you can modify you theme in the `author.hbs` like so, using [IOTA Buttons]([ghost-integration/post.hbs](https://iota-button.org)):
