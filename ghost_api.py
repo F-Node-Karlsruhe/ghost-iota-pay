@@ -35,7 +35,7 @@ def get_post(slug, exp_date):
     # append expire date
     html.find('div', {'class': 'byline-meta-content'}).append(BeautifulSoup(
         '<time class="byline-meta-date"><span class="bull">•</span>Expires %s</time>'
-        % exp_date.strftime('%d.%m.%y %I:%M'),
+        % exp_date.strftime('%d.%m.%y %H:%M'),
         "html.parser"))
 
     # insert the actual post content
