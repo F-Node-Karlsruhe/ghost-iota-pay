@@ -116,3 +116,11 @@ def check_slug_is_paid(slug):
     headers = {'Authorization': 'Ghost {}'.format(create_token())}
 
     return requests.get(api_url, headers=headers).json()['posts'][0]['visibility'] == 'paid'
+
+
+def get_primary_author(slug):
+    api_url = '%s/ghost/api/v3/admin/posts/slug/%s' % (URL, slug)
+
+    headers = {'Authorization': 'Ghost {}'.format(create_token())}
+
+    return requests.get(api_url, headers=headers).json()['posts'][0]['primary_author']

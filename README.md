@@ -113,3 +113,23 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
 {{/has}}
 ```
 Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)
+
+# Author address setup
+You can set `AUTHOR_ADDRESSES=True` in you env to allow authors to get paid individually.
+If so, the athor can paste in their current IOTA address in the `location` field in their ghost admin panel.  
+When an article is fetched, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
+
+**Improvement**
+As an IOTA address is quite ugly in the location field of the author, you can modify you theme in the `author.hbs` like so, using [IOTA Buttons]([ghost-integration/post.hbs](https://iota-button.org)):
+
+```handlebars
+{{#if location}}
+    <span class="author-profile-location">
+        <iota-button address="{{location}}"
+                      currency="EUR"
+                      label="Donate"
+                      merchant="Author"
+                      type="donation">
+        </iota-button></span>
+{{/if}}
+```
