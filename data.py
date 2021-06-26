@@ -4,8 +4,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 from ghost_api import get_primary_author
-# move to own script (loop import)
-from app import add_listening_address
+
 
 load_dotenv()
 
@@ -72,14 +71,14 @@ def get_iota_listening_addresses():
 
     return topics
 
-def _update_author(id, address):
+def _update_author(id, address, iota_listener):
 
     authors[id] = address
 
-    add_listening_address(address)
+    iota_listener.add_listening_address(address)
 
 
-def get_iota_address(slug):
+def get_iota_address(slug, iota_listener):
 
     if AUTHOR_ADDRESSES:
 
@@ -91,12 +90,12 @@ def get_iota_address(slug):
             # add if neccessary
             if author['id'] not in authors.keys():
 
-                _update_author(author['id'], author['location'])
+                _update_author(author['id'], author['location'], iota_listener)
 
             # update if neccessary
             if authors[author['id']] != author['location']:
 
-                _update_author(author['id'], author['location'])
+                _update_author(author['id'], author['location'], iota_listener)
         
             return author['location']
 
