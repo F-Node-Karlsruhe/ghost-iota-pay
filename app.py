@@ -5,7 +5,7 @@ import ghost_api as ghost
 from dotenv import load_dotenv
 import os
 import iota
-from datetime import timedelta
+from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 from flask import (Flask,
                     render_template,
@@ -99,7 +99,7 @@ def proxy(slug):
 
         session['iota_ghost_user_token:'] = secrets.token_hex(16)       
 
-	
+
     user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:'] + slug).encode('utf-8')).hexdigest()
 
     if user_token_hash_exists(user_token_hash):
@@ -107,15 +107,15 @@ def proxy(slug):
         if user_token_hash_valid(user_token_hash):
 
             return ghost.get_post(slug, get_exp_date(user_token_hash))
-        
-        exp_date = pop_from_paid_db(user_token_hash)
 
-        return make_response('Access expired at %s' % exp_date)
+        return render_template('expired.html', exp_date = pop_from_paid_db(user_token_hash).strftime('%d.%m.%y %H:%M'))
 
     return ghost.get_post_payment(slug, render_template('pay.html',
                                                         user_token_hash = user_token_hash,
                                                         iota_address = get_iota_address(slug, iota_listener),
-                                                        price = price_per_content))
+                                                        price = price_per_content,
+                                                        exp_date =  (datetime.now() + timedelta(hours = session_lifetime))
+                                                        .strftime('%d.%m.%y %H:%M')))
 
 
 # socket endpoint to receive payment event

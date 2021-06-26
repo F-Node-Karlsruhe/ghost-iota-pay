@@ -1,7 +1,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script type="module" src="//iota-button.org/build/iota-button.esm.js"></script> 
-<script nomodule src="//iota-button.org/build/iota-button.js"></script>
 <script>
     $(document).ready(function () {
         // start up the SocketIO connection to the server
@@ -19,6 +17,13 @@
     });
 </script>
 <style>
+    .custom-box {
+        background: white;
+        border-radius: 5px;
+        width: 100%;
+        display: inline-block;
+        padding: 5px;
+    }
     .loader {
       border: 8px solid #f3f3f3;
       border-radius: 50%;
@@ -41,42 +46,33 @@
       100% { transform: rotate(360deg); }
     }
 </style>
-<div style="background: lightgray; border-radius: 10px; padding: 30px;">
+<div style="background: lightgray; border-radius: 10px; padding: 30px; text-align: center;">
     <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 100px; margin: auto;"/>
-    <h2 style="text-align: center; margin-bottom: 50px;;">
+    <h2 style="margin-bottom: 50px;;">
         Ghost IOTA Pay
-        <a style="display: block; width: 16px; margin: 16px auto;" href="https://github.com/F-Node-Karlsruhe/ghost-iota-pay"><img width="16" src="{{ url_for('static', filename='github.png') }}"/></a>
+        <a style="display: block; width: 16px; margin: 16px auto;" href="https://github.com/F-Node-Karlsruhe/ghost-iota-pay" target=“_blank”><img width="16" src="{{ url_for('static', filename='github.png') }}"/></a>
     </h2>
-    <p>Please pay <strong>{{ price }} IOTA</strong> to the following address and attach the displayed data.</p>
-    <br>
+    <p>Please pay <strong>{{ price }} IOTA</strong> to the following address and attach the displayed data</p>
+    <div style="margin: 50px;">
+        <h5>Access until</h5>
+        <p class="custom-box" style="width: auto;"><strong>{{ exp_date }}</strong></p>
+    </div>
     <div style="margin: 10px 0;">
     <p>Address:
         <br>
         <strong 
-        style="
-        background: white;
-        border-radius: 5px; width: 100%;
-        display: inline-block;
-        padding: 5px;"
-        >
-        {{ iota_address }}</strong>
+        class="custom-box">{{ iota_address }}</strong>
     </p>
     </div>
     <div style="margin: 10px 0;">
     <p>Data:
         <br>
         <strong
-        style="
-        background: white;
-        border-radius: 5px; width: 100%;
-        display: inline-block;
-        padding: 5px;"
-        >
-        {{ user_token_hash }}</strong>
+        class="custom-box">{{ user_token_hash }}</strong>
     </p>
     </div>
     <br>
-    <div style="text-align: center;">
+    <div>
         <div class="loader"></div>
         <p style="font-size: small;">Waiting for payment ...</p>
     <h5>

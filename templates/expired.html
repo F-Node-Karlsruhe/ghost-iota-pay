@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>IOTA Pay-per-Content Gateway</title>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body style="height: 100%; display: flex; align-items: center; justify-content: center;">
+    <div style="margin: auto; text-align: center;">
+        <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 200px;"/>
+        <h2>Ghost IOTA Pay</h2>
+        <p>Pay per content gateway for <a href="https://ghost.org/">Ghost Blogs</a></p>
+        <div style="background: lightgray; border-radius: 10px; padding: 30px; text-align: center;">
+        <h3>Access expired</h3>
+        <h5>{{ exp_date }}</h5>
+        <button onClick="window.location.reload();">Purchase again</button>
+        </div>
+        <div style="margin-top: 50px;">
+            <p><a href="https://github.com/F-Node-Karlsruhe/ghost-iota-pay"><img width="16" src="{{ url_for('static', filename='github.png') }}"/></a></p>
+        </div>
+    </div>
+</body>
+</html>
