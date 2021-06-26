@@ -115,7 +115,7 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
 Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)
 
 # Author address setup
-You can set `AUTHOR_ADDRESSES=True` in you env to allow authors to get paid individually.
+You can set `AUTHOR_ADDRESSES=true` in you env to allow authors to get paid individually.
 If so, the athor can paste in their current IOTA address in the `location` field in their ghost admin panel.  
 When an article is fetched, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
 

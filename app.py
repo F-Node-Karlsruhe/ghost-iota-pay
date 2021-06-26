@@ -23,7 +23,8 @@ from data import (user_token_hash_exists,
                     stop_db,
                     get_iota_address,
                     get_iota_listening_addresses,
-                    is_own_address)
+                    is_own_address,
+                    get_exp_date)
 
 
 load_dotenv()
@@ -100,20 +101,21 @@ def proxy(slug):
 
 	
     user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:'] + slug).encode('utf-8')).hexdigest()
-    
+
     if user_token_hash_exists(user_token_hash):
 
         if user_token_hash_valid(user_token_hash):
 
-            return ghost.get_post(slug)
+            return ghost.get_post(slug, get_exp_date(user_token_hash))
         
         exp_date = pop_from_paid_db(user_token_hash)
 
         return make_response('Access expired at %s' % exp_date)
 
-    return ghost.get_post_payment(slug, render_template('pay.html', user_token_hash = user_token_hash,
+    return ghost.get_post_payment(slug, render_template('pay.html',
+                                                        user_token_hash = user_token_hash,
                                                         iota_address = get_iota_address(slug, iota_listener),
-                                                        price = price_per_content ))
+                                                        price = price_per_content))
 
 
 # socket endpoint to receive payment event

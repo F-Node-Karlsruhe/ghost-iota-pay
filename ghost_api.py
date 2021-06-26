@@ -3,7 +3,6 @@ import jwt	# pip install pyjwt
 from datetime import datetime as date
 from dotenv import load_dotenv
 import os
-import json
 from bs4 import BeautifulSoup
 
 load_dotenv()
@@ -17,7 +16,7 @@ key = os.getenv('GHOST_ADMIN_KEY')
 # Split the key into ID and SECRET
 id, secret = key.split(':')
 
-def get_post(slug):
+def get_post(slug, exp_date):
 
     url = '%s/%s' % (URL, slug)
 
@@ -32,6 +31,12 @@ def get_post(slug):
 
     # clear pay link button
     html.find('button', {'id':'ghost-iota-pay-link'}).extract()
+
+    # append expire date
+    html.find('div', {'class': 'byline-meta-content'}).append(BeautifulSoup(
+        '<time class="byline-meta-date"><span class="bull">•</span>Expires %s</time>'
+        % exp_date.strftime('%d.%m.%y %I:%M'),
+        "html.parser"))
 
     # insert the actual post content
     content_section.insert(0, BeautifulSoup(data['html'], "html.parser"))

@@ -61,6 +61,9 @@ def add_to_paid_db(user_token_hash, lifetime):
 def pop_from_paid_db(user_token_hash):
     return paid_db.pop(user_token_hash)
 
+def get_exp_date(user_token_hash):
+    return datetime.fromisoformat(paid_db[user_token_hash])
+
 def get_iota_listening_addresses():
     
     topics = ['addresses/%s/outputs' % IOTA_ADDRESS]
