@@ -108,7 +108,8 @@ def proxy(slug):
 
             return ghost.get_post(slug, get_exp_date(user_token_hash))
 
-        return render_template('expired.html', exp_date = pop_from_paid_db(user_token_hash).strftime('%d.%m.%y %H:%M'))
+        return render_template('expired.html',
+                                exp_date = datetime.fromisoformat(pop_from_paid_db(user_token_hash)).strftime('%d.%m.%y %H:%M'))
 
     return ghost.get_post_payment(slug, render_template('pay.html',
                                                         user_token_hash = user_token_hash,
