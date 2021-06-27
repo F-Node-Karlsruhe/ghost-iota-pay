@@ -13,8 +13,18 @@
         socket.on('payment_received', function() {
             location.reload();
         });
-
+        socket.on('payment_not_found', function() {
+            console.log('Payment not found');
+        });
+        $('#check_payment_button').on('click', function(){
+            socket.emit('check_payment', {user_token_hash: '{{ user_token_hash }}', iota_address: '{{ iota_address }}'});
+        });
+        // show manual payment check after 30 seconds time
+        setTimeout("showCheckPayment()", 30000);
     });
+    function showCheckPayment() { 
+        document.getElementById("check_payment").style.display = "inline"; 
+    }
 </script>
 <style>
     .custom-box {
@@ -84,5 +94,8 @@
                 Firefly wallet
     </a>
     </h5>
+    <div id="check_payment" style="display:none">
+        <button id="check_payment_button">Check for payment</button>
+    </div>
     </div>
 </div>

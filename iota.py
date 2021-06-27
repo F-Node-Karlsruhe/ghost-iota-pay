@@ -41,6 +41,9 @@ class Listener():
         # link user_token_hashes to session ids
         self.socket_session_ids = {}
 
+        # manual payment checks
+        self.manual_pamyent_checks = set()
+
         # create the iota client
         self.client = iota_client.Client(nodes_name_password=[[node_url]],
                                         mqtt_broker_options=broker_options)
@@ -79,16 +82,13 @@ class Listener():
 
                 message = self.client.get_message_data(json.loads(event['payload'])['messageId'])
 
-                if self.check_payment(message):
+                if self.payment_valid(message):
                     # this must be easier to access within value transfers
                     user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
 
-                    add_to_paid_db(user_token_hash, session_lifetime)
+                    self.unlock_content(user_token_hash)
 
-                    if user_token_hash in self.socket_session_ids.keys():
-
-                        # emit pamyent received event to the user
-                        self.socketio.emit('payment_received', room=self.socket_session_ids.pop(user_token_hash))
+                    
             
             except Exception as e:
                 LOG.warning(e)
@@ -96,7 +96,18 @@ class Listener():
             self.q.task_done()
 
 
-    def check_payment(self, message):
+    def unlock_content(self, user_token_hash):
+
+        add_to_paid_db(user_token_hash, session_lifetime)
+
+        # prevent key errors
+        if user_token_hash in self.socket_session_ids.keys():
+
+            # emit pamyent received event to the user
+            self.socketio.emit('payment_received', room=self.socket_session_ids.pop(user_token_hash))
+
+
+    def payment_valid(self, message):
 
         for output in message['payload']['transaction'][0]['essence']['outputs']:
 
@@ -107,6 +118,36 @@ class Listener():
                     return True
 
         return False
+
+    
+    def manual_payment_check(self, address, user_token_hash):
+
+        # easy checks first to prevent overload
+        if user_token_hash not in self.manual_pamyent_checks and is_own_address(address):
+
+            self.manual_pamyent_checks.add(user_token_hash)
+
+            outputs = self.client.find_outputs(addresses=[address])
+
+            for output in outputs:
+
+                message = self.client.get_message_data(output['message_id'])
+
+                if user_token_hash == bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode():
+
+                    if self.payment_valid(message):
+
+                        self.unlock_content(user_token_hash)
+
+            # prevent key errors
+            if user_token_hash in self.socket_session_ids.keys():
+
+                # emit pamyent not found
+                self.socketio.emit('payment_not_found', room=self.socket_session_ids[user_token_hash])
+
+        self.manual_pamyent_checks.remove(user_token_hash)
+
+
 
     def stop(self):
         self.q.put(self.STOP)
