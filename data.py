@@ -55,8 +55,8 @@ def user_token_hash_exists(user_token_hash):
 def user_token_hash_valid(user_token_hash):
     return datetime.fromisoformat(paid_db[user_token_hash]) > datetime.utcnow()
 
-def add_to_paid_db(user_token_hash, lifetime):
-    paid_db[user_token_hash] = (datetime.utcnow() + timedelta(hours = lifetime)).isoformat()
+def add_to_paid_db(user_token_hash, exp_time):
+    paid_db[user_token_hash] = exp_time.isoformat()
 
 def pop_from_paid_db(user_token_hash):
     return paid_db.pop(user_token_hash)

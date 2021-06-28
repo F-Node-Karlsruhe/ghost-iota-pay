@@ -119,6 +119,7 @@ def proxy(slug):
                                                         .strftime('%d.%m.%y %H:%M UTC')))
 
 
+
 # socket endpoint to receive payment event
 @socketio.on('await_payment')
 def await_payment(data):
@@ -126,6 +127,14 @@ def await_payment(data):
     user_token_hash = data['user_token_hash']
 
     iota_listener.socket_session_ids[user_token_hash] = request.sid
+
+
+# socket endpoint for manual check on payment
+@socketio.on('check_payment')
+def await_payment(data):
+
+    socketio.start_background_task(iota_listener.manual_payment_check, data['iota_address'], data['user_token_hash'])
+
 
 
 
