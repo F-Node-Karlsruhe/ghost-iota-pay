@@ -1,7 +1,9 @@
+from datetime import date, datetime
 import iota_client
 import queue
 import json
 import logging
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from data import get_iota_listening_addresses, add_to_paid_db, is_own_address
 import os
@@ -42,7 +44,7 @@ class Listener():
         self.socket_session_ids = {}
 
         # manual payment checks
-        self.manual_pamyent_checks = set()
+        self.manual_payment_checks = set()
 
         # create the iota client
         self.client = iota_client.Client(nodes_name_password=[[node_url]],
@@ -66,6 +68,10 @@ class Listener():
 
 
     def add_listening_address(self, iota_address):
+        '''
+        Adds an iota_address to the topics of the mqtt listener
+        '''
+
         self.client.subscribe_topic('addresses/%s/outputs' % iota_address, self.on_mqtt_event)
 
 
@@ -96,9 +102,16 @@ class Listener():
             self.q.task_done()
 
 
-    def unlock_content(self, user_token_hash):
+    def unlock_content(self, user_token_hash, exp_time=None):
+        '''
+        Sends the user_token_hash to the db with the right expiration time and informs the user via socket
+        '''
 
-        add_to_paid_db(user_token_hash, session_lifetime)
+        if exp_time is None:
+
+            exp_time = datetime.utcnow() + timedelta(hours = session_lifetime)
+
+        add_to_paid_db(user_token_hash, exp_time)
 
         # prevent key errors
         if user_token_hash in self.socket_session_ids.keys():
@@ -108,6 +121,9 @@ class Listener():
 
 
     def payment_valid(self, message):
+        '''
+        Check if the right amount arrived on the rigth address
+        '''
 
         for output in message['payload']['transaction'][0]['essence']['outputs']:
 
@@ -121,11 +137,14 @@ class Listener():
 
     
     def manual_payment_check(self, address, user_token_hash):
+        '''
+        Triggers a crawl on the designated address to find a payment in the past and add it to the db
+        '''
 
         # easy checks first to prevent overload
-        if user_token_hash not in self.manual_pamyent_checks and is_own_address(address):
+        if user_token_hash not in self.manual_payment_checks and is_own_address(address):
 
-            self.manual_pamyent_checks.add(user_token_hash)
+            self.manual_payment_checks.add(user_token_hash)
 
             outputs = self.client.find_outputs(addresses=[address])
 
@@ -137,7 +156,11 @@ class Listener():
 
                     if self.payment_valid(message):
 
-                        self.unlock_content(user_token_hash)
+                        exp_time = self.get_payment_expiry(output['message_id'])
+
+                        if exp_time > datetime.utcnow():
+
+                            self.unlock_content(user_token_hash, exp_time)
 
             # prevent key errors
             if user_token_hash in self.socket_session_ids.keys():
@@ -145,14 +168,29 @@ class Listener():
                 # emit pamyent not found
                 self.socketio.emit('payment_not_found', room=self.socket_session_ids[user_token_hash])
 
-        self.manual_pamyent_checks.remove(user_token_hash)
+        self.manual_payment_checks.remove(user_token_hash)
+
+    def get_payment_expiry(self, message_id):
+        '''
+        Fetches the tangle to get the timestamp of the milstone referencing the message
+        '''
+
+        milestone_index = self.client.get_message_metadata(message_id)['referenced_by_milestone_index']
+
+        message_timestamp = datetime.fromtimestamp(self.client.get_milestone(milestone_index)['timestamp'])
+
+        return message_timestamp + timedelta(hours = session_lifetime)
 
 
 
     def stop(self):
-        self.q.put(self.STOP)
-        LOG.info('MQTT worker stopped')
+        '''
+        Stops the iota listener gracefully
+        '''
+
         self.client.disconnect()
         LOG.info('MQTT client stopped')
+        self.q.put(self.STOP)
+        LOG.info('MQTT worker stopped')
         self.q.queue.clear()
         LOG.info('Working queue cleared')

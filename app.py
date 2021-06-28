@@ -115,7 +115,7 @@ def proxy(slug):
                                                         user_token_hash = user_token_hash,
                                                         iota_address = get_iota_address(slug, iota_listener),
                                                         price = price_per_content,
-                                                        exp_date =  (datetime.now() + timedelta(hours = session_lifetime))
+                                                        exp_date =  (datetime.utcnow() + timedelta(hours = session_lifetime))
                                                         .strftime('%d.%m.%y %H:%M')))
 
 
