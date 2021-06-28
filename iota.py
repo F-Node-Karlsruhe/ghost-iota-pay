@@ -168,7 +168,7 @@ class Listener():
                 # emit pamyent not found
                 self.socketio.emit('payment_not_found', room=self.socket_session_ids[user_token_hash])
 
-        self.manual_payment_checks.remove(user_token_hash)
+            self.manual_payment_checks.remove(user_token_hash)
 
     def get_payment_expiry(self, message_id):
         '''
