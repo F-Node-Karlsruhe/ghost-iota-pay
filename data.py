@@ -53,10 +53,10 @@ def user_token_hash_exists(user_token_hash):
     return user_token_hash in paid_db.keys()
 
 def user_token_hash_valid(user_token_hash):
-    return datetime.fromisoformat(paid_db[user_token_hash]) > datetime.now()
+    return datetime.fromisoformat(paid_db[user_token_hash]) > datetime.utcnow()
 
 def add_to_paid_db(user_token_hash, lifetime):
-    paid_db[user_token_hash] = (datetime.now() + timedelta(hours = lifetime)).isoformat()
+    paid_db[user_token_hash] = (datetime.utcnow() + timedelta(hours = lifetime)).isoformat()
 
 def pop_from_paid_db(user_token_hash):
     return paid_db.pop(user_token_hash)
@@ -121,7 +121,7 @@ def is_own_address(address):
 
 # remove all expired entries
 def _clear_db():
-    now = datetime.now()
+    now = datetime.utcnow()
     for hash, exp in list(paid_db.items()):
         if datetime.fromisoformat(exp) < now:
             del paid_db[hash]

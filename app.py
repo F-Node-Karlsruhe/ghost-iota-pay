@@ -109,14 +109,14 @@ def proxy(slug):
             return ghost.get_post(slug, get_exp_date(user_token_hash))
 
         return render_template('expired.html',
-                                exp_date = datetime.fromisoformat(pop_from_paid_db(user_token_hash)).strftime('%d.%m.%y %H:%M'))
+                                exp_date = datetime.fromisoformat(pop_from_paid_db(user_token_hash)).strftime('%d.%m.%y %H:%M UTC'))
 
     return ghost.get_post_payment(slug, render_template('pay.html',
                                                         user_token_hash = user_token_hash,
                                                         iota_address = get_iota_address(slug, iota_listener),
                                                         price = price_per_content,
-                                                        exp_date =  (datetime.now() + timedelta(hours = session_lifetime))
-                                                        .strftime('%d.%m.%y %H:%M')))
+                                                        exp_date =  (datetime.utcnow() + timedelta(hours = session_lifetime))
+                                                        .strftime('%d.%m.%y %H:%M UTC')))
 
 
 # socket endpoint to receive payment event
