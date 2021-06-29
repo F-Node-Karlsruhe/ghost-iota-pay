@@ -58,6 +58,7 @@ class Listener():
     def on_mqtt_event(self, event):
         """Put the received event to queue.
         """
+        LOG.info(event)
         self.q.put(event)
 
 
