@@ -63,7 +63,7 @@ docker build --tag ghost-iota-pay .
 
 Run the image as container
 ```shell
-docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db ghost-iota-pay
+docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db --env-file ./.env ghost-iota-pay
 ```
 
 ### Run ghost-iota-pay with Docker from repository
@@ -120,7 +120,7 @@ If so, the authors can paste in their current IOTA address in the `location` fie
 When an article is requested, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
 
 **Improvement**
-As an IOTA address is quite ugly in the location field of the author, you can modify you theme in the `author.hbs` like so, using [IOTA Buttons]([ghost-integration/post.hbs](https://iota-button.org)):
+As an IOTA address is quite ugly in the location field of the author, you can modify you theme in the `author.hbs` like so, using [IOTA Buttons](https://iota-button.org):
 
 ```handlebars
 {{#if location}}
