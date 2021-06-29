@@ -15,15 +15,17 @@
         });
         socket.on('payment_not_found', function() {
             console.log('Payment not found');
+            document.getElementById("loader_text").innerHTML = 'Waiting for payment ...'
         });
         $('#check_payment_button').on('click', function(){
             socket.emit('check_payment', {user_token_hash: '{{ user_token_hash }}', iota_address: '{{ iota_address }}'});
+            document.getElementById("loader_text").innerHTML = 'Searching for payment ...'
         });
-        // show manual payment check after 30 seconds time
-        setTimeout("showCheckPayment()", 30000);
+        // show manual payment check after 30 seconds
+        setTimeout("enableCheckPayment()", 30000);
     });
-    function showCheckPayment() { 
-        document.getElementById("check_payment").style.display = "inline"; 
+    function enableCheckPayment() { 
+        document.getElementById("check_payment").style.display = 'inline'; 
     }
 </script>
 <style>
@@ -84,7 +86,11 @@
     <br>
     <div>
         <div class="loader"></div>
-        <p style="font-size: small;">Waiting for payment ...</p>
+        <p id="loader_text" style="font-size: small;">Waiting for payment ...</p>
+        <p id="check_payment" style="font-size: x-small; display:none;">
+            Already paid? 
+            <button style="border-radius: 5px;" id="check_payment_button">Manual payment check</button>
+        </p>
     <h5>
     <a style="color: white;
             text-decoration: none;
@@ -94,8 +100,5 @@
                 Firefly wallet
     </a>
     </h5>
-    <div id="check_payment" style="display:none">
-        <button id="check_payment_button">Check for payment</button>
-    </div>
     </div>
 </div>

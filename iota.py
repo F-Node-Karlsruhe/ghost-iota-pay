@@ -162,6 +162,10 @@ class Listener():
 
                             self.unlock_content(user_token_hash, exp_time)
 
+                            self.manual_payment_checks.remove(user_token_hash)
+
+                            return
+
             # prevent key errors
             if user_token_hash in self.socket_session_ids.keys():
 

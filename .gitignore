@@ -4,3 +4,4 @@ iota/
 .env
 db/*
 __pycache__/
+env/
