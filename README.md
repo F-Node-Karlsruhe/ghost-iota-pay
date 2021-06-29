@@ -63,7 +63,7 @@ docker build --tag ghost-iota-pay .
 
 Run the image as container
 ```shell
-docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db ghost-iota-pay
+docker run -it -p 5000:5000 -v /$(pwd)/db:/app/db --env-file ./.env ghost-iota-pay
 ```
 
 ### Run ghost-iota-pay with Docker from repository
