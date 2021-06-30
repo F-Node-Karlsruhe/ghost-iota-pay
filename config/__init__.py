@@ -20,3 +20,5 @@ AUTHOR_ADDRESSES= getenv('AUTHOR_ADDRESSES') == 'true'
 NODE_URL = getenv('NODE_URL')
 
 GHOST_ADMIN_KEY = getenv('GHOST_ADMIN_KEY')
+
+ADMIN_PANEL = getenv('ADMIN_PANEL') == 'true'

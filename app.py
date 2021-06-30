@@ -2,7 +2,7 @@ import logging
 import secrets
 from utils.hash import hash_user_token
 from services.ghost_api import get_post, get_post_payment
-from config import SECRET_KEY, DATABASE_LOCATION, SESSION_LIFETIME, URL
+from config import SECRET_KEY, DATABASE_LOCATION, SESSION_LIFETIME, URL, ADMIN_PANEL
 import os
 from services.iota import Listener
 from datetime import datetime, timedelta
@@ -134,7 +134,8 @@ if __name__ == '__main__':
         with app.app_context():
             db.create_all()
 
-        admin.init_app(app)
+        if ADMIN_PANEL:
+            admin.init_app(app)
 
         socketio.start_background_task(iota_listener.start, app)
         socketio.run(app, host='0.0.0.0')
