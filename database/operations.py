@@ -70,6 +70,16 @@ def get_access(user_token_hash, slug):
 
     return access
 
+def access_expired(user_token_hash):
+
+    date = Access.query.get(user_token_hash).exp_date
+    
+    Access.query.get(user_token_hash).exp_date = None
+
+    db.session.commit()
+
+    return date
+
 def get_slug_price_for_hash(user_token_hash):
 
     return Access.query.get(user_token_hash).slug_price

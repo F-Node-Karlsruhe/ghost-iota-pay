@@ -19,7 +19,8 @@ from database.operations import (check_slug,
                                 get_access,
                                 get_slug_data,
                                 get_author_address,
-                                set_session)
+                                set_session,
+                                access_expired)
 
 
 app = Flask(__name__.split('.')[0])
@@ -95,7 +96,7 @@ def proxy(slug):
             return get_post(slug, access.exp_date)
 
         return render_template('expired.html',
-                                exp_date = access.exp_date.strftime('%d.%m.%y %H:%M UTC'))
+                                exp_date = access_expired(user_token_hash).strftime('%d.%m.%y %H:%M UTC'))
 
     slug_info = get_slug_data(slug)
 
