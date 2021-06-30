@@ -14,6 +14,7 @@ from flask import (Flask,
                     send_from_directory,
                     redirect)
 from database.db import db
+from admin import admin
 from database.operations import (check_slug,
                                 get_access,
                                 get_slug_data,
@@ -85,9 +86,9 @@ def proxy(slug):
 
     user_token_hash = hash_user_token(session['iota_ghost_user_token:'], slug)
 
-    access = get_access(user_token_hash)
+    access = get_access(user_token_hash, slug)
 
-    if access is not None:
+    if access.exp_date is not None:
 
         if access.exp_date > datetime.utcnow():
 
@@ -103,7 +104,7 @@ def proxy(slug):
     return get_post_payment(slug, render_template('pay.html',
                                                     user_token_hash = user_token_hash,
                                                     iota_address = iota_address,
-                                                    price = slug_info.price,
+                                                    price = access.slug_price,
                                                     exp_date =  (datetime.utcnow() + timedelta(hours = SESSION_LIFETIME))
                                                     .strftime('%d.%m.%y %H:%M UTC')))
 
@@ -132,6 +133,8 @@ if __name__ == '__main__':
 
         with app.app_context():
             db.create_all()
+
+        admin.init_app(app)
 
         socketio.start_background_task(iota_listener.start, app)
         socketio.run(app, host='0.0.0.0')

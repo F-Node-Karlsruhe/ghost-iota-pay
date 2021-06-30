@@ -5,9 +5,9 @@ import json
 import logging
 from datetime import datetime, timedelta
 import os
-from config import SESSION_LIFETIME, NODE_URL, DEFAULT_PRICE
+from config import SESSION_LIFETIME, NODE_URL
 
-from database.operations import get_iota_listening_addresses, add_access, is_own_address, get_socket_session
+from database.operations import get_iota_listening_addresses, add_access, is_own_address, get_socket_session, get_slug_price_for_hash
 
 
 logging.basicConfig(level=logging.INFO)
@@ -79,13 +79,12 @@ class Listener():
 
                     message = self.client.get_message_data(json.loads(event['payload'])['messageId'])
 
-                    if self.payment_valid(message):
-                        # this must be easier to access within value transfers
-                        user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
+                    # this must be easier to access within value transfers
+                    user_token_hash = bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode()
+
+                    if self.payment_valid(message, user_token_hash):
 
                         self.unlock_content(user_token_hash)
-
-                        
                 
                 except Exception as e:
                     LOG.error(e)
@@ -98,12 +97,14 @@ class Listener():
         Sends the user_token_hash to the db with the right expiration time and informs the user via socket
         '''
 
+        if exp_time is None:
+
+            exp_time = datetime.utcnow() + timedelta(hours = SESSION_LIFETIME)
         
         add_access(user_token_hash, exp_time)
 
         # prevent key errors
         socket_session = get_socket_session(user_token_hash)
-
             
         if socket_session:
 
@@ -111,7 +112,7 @@ class Listener():
             self.socketio.emit('payment_received', room=socket_session.session_id)
 
 
-    def payment_valid(self, message):
+    def payment_valid(self, message, user_token_hash):
         '''
         Check if the right amount arrived on the rigth address
         '''
@@ -120,7 +121,7 @@ class Listener():
 
             if is_own_address(output['signature_locked_single']['address']):
 
-                if output['signature_locked_single']['amount'] >= DEFAULT_PRICE:
+                if output['signature_locked_single']['amount'] >= get_slug_price_for_hash(user_token_hash):
 
                     return True
 
@@ -145,7 +146,7 @@ class Listener():
 
                     if user_token_hash == bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode():
 
-                        if self.payment_valid(message):
+                        if self.payment_valid(message, user_token_hash):
 
                             exp_time = self.get_payment_expiry(output['message_id'])
 

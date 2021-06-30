@@ -17,7 +17,7 @@ def check_slug(slug, iota_listener):
         post_data = get_post_data(slug)
 
         # update iota_address if neccesary
-        if post_data['primary_author']['location'] is not None:
+        if AUTHOR_ADDRESSES and post_data['primary_author']['location'] is not None:
 
             if post_data['primary_author']['location'] != Author.query.get(post_data['primary_author']['id']).iota_address:
 
@@ -36,7 +36,7 @@ def check_slug(slug, iota_listener):
             if post_data['visibility'] == 'paid':
 
                 # add author if not existant
-                if not __exists(Author, post_data['primary_author']['id']):
+                if AUTHOR_ADDRESSES and not __exists(Author, post_data['primary_author']['id']):
 
                     add_author(post_data['primary_author']['id'], post_data['primary_author']['location'])
 
@@ -53,9 +53,27 @@ def check_slug(slug, iota_listener):
         return None
 
 
-def get_access(user_token_hash):
+def get_access(user_token_hash, slug):
 
-    return Access.query.get(user_token_hash)
+    access = Access.query.get(user_token_hash)
+
+    if not access:
+
+        access = Access(token_hash=user_token_hash, slug=slug)
+        db.session.add(access)
+        db.session.commit()
+
+    if access.exp_date is None:
+
+        access.slug_price = Slug.query.get(slug).price
+        db.session.commit()
+
+    return access
+
+def get_slug_price_for_hash(user_token_hash):
+
+    return Access.query.get(user_token_hash).slug_price
+
 
 
 def set_session(user_token_hash, session_id):
@@ -65,13 +83,13 @@ def set_session(user_token_hash, session_id):
     if not session:
 
         session = Session(token_hash=user_token_hash, session_id=session_id)
+
         db.session.add(session)
         db.session.commit()
 
     else:
 
         session.session_id = session_id
-        session.timestamp = datetime.utcnow()
         db.session.commit()
 
 def get_socket_session(user_token_hash):
@@ -81,8 +99,8 @@ def get_socket_session(user_token_hash):
 
 def add_access(user_token_hash, exp_date=None):
 
-    access = Access(token_hash=user_token_hash, exp_date=exp_date)
-    db.session.add(access)
+    access = Access.query.get(user_token_hash)
+    access.exp_date = exp_date
     db.session.commit()
 
 
@@ -143,7 +161,7 @@ def is_own_address(iota_address):
 
         return True
 
-    return iota_address in [address for address in db.session.query(Access.iota_address).distinct()]
+    return iota_address in [address.iota_address for address in Author.query.distinct(Author.iota_address)]
 
 
 def __exists(table, key):
