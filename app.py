@@ -1,56 +1,48 @@
 import logging
 import secrets
-import hashlib
-import ghost_api as ghost
-from dotenv import load_dotenv
+from utils.hash import hash_user_token
+from services.ghost_api import get_post, get_post_payment
+from config import SECRET_KEY, DATABASE_LOCATION, SESSION_LIFETIME, URL
 import os
-import iota
+from services.iota import Listener
 from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 from flask import (Flask,
                     render_template,
                     request,
-                    make_response,
                     session,
                     send_from_directory,
                     redirect)
-from data import (user_token_hash_exists,
-                    user_token_hash_valid,
-                    is_slug_unknown, 
-                    add_to_known_slugs,
-                    add_to_paid_db,
-                    pop_from_paid_db,
-                    stop_db,
-                    get_iota_address,
-                    get_iota_listening_addresses,
-                    is_own_address,
-                    get_exp_date)
+from database.db import db
+from database.operations import (check_slug,
+                                get_access,
+                                get_slug_data,
+                                get_author_address,
+                                set_session)
 
-
-load_dotenv()
 
 app = Flask(__name__.split('.')[0])
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = SECRET_KEY
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_LOCATION
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # create web socket for async communication
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
 
 # create itoa listener
-iota_listener = iota.Listener(socketio)
+iota_listener = Listener(socketio)
 
-session_lifetime = int(os.getenv('SESSION_LIFETIME'))
-
-# price per content
-price_per_content = int(os.getenv('PRICE_PER_CONTENT'))
 
 # expand default 31 days session lifetime if neccessary
-if session_lifetime > 744:
-    app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=session_lifetime)
+if SESSION_LIFETIME > 744:
+    app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=SESSION_LIFETIME)
 
 
 logging.basicConfig(level=logging.INFO)
-# Set it to you domain
+
 LOG = logging.getLogger("ghost-iota-pay")
 
 
@@ -74,24 +66,15 @@ def favicon():
 def proxy(slug):
 
     # Check if slug exists and add to db
-    if is_slug_unknown(slug):
+    slug_check = check_slug(slug, iota_listener)
 
-        if ghost.check_slug_exists(slug):
+    if slug_check is None:
 
-            if ghost.check_slug_is_paid(slug):
+        return 'Slug not available'
 
-                add_to_known_slugs(slug)
+    if slug_check == 'free':
 
-                LOG.debug("Added slug %s to db", slug)
-
-            else:
-
-                # redirect if post is free
-                return redirect('%s/%s' % (ghost.URL, slug))
-
-        else:
-
-            return make_response('Slug not available')
+        return redirect('%s/%s' % (URL, slug))
     
 
     # Check if user already has cookie and set one 
@@ -100,23 +83,29 @@ def proxy(slug):
         session['iota_ghost_user_token:'] = secrets.token_hex(16)       
 
 
-    user_token_hash = hashlib.sha256(str(session['iota_ghost_user_token:'] + slug).encode('utf-8')).hexdigest()
+    user_token_hash = hash_user_token(session['iota_ghost_user_token:'], slug)
 
-    if user_token_hash_exists(user_token_hash):
+    access = get_access(user_token_hash)
 
-        if user_token_hash_valid(user_token_hash):
+    if access is not None:
 
-            return ghost.get_post(slug, get_exp_date(user_token_hash))
+        if access.exp_date > datetime.utcnow():
+
+            return get_post(slug, access.exp_date)
 
         return render_template('expired.html',
-                                exp_date = datetime.fromisoformat(pop_from_paid_db(user_token_hash)).strftime('%d.%m.%y %H:%M UTC'))
+                                exp_date = access.exp_date.strftime('%d.%m.%y %H:%M UTC'))
 
-    return ghost.get_post_payment(slug, render_template('pay.html',
-                                                        user_token_hash = user_token_hash,
-                                                        iota_address = get_iota_address(slug, iota_listener),
-                                                        price = price_per_content,
-                                                        exp_date =  (datetime.utcnow() + timedelta(hours = session_lifetime))
-                                                        .strftime('%d.%m.%y %H:%M UTC')))
+    slug_info = get_slug_data(slug)
+
+    iota_address = get_author_address(slug_info.author_id)
+
+    return get_post_payment(slug, render_template('pay.html',
+                                                    user_token_hash = user_token_hash,
+                                                    iota_address = iota_address,
+                                                    price = slug_info.price,
+                                                    exp_date =  (datetime.utcnow() + timedelta(hours = SESSION_LIFETIME))
+                                                    .strftime('%d.%m.%y %H:%M UTC')))
 
 
 
@@ -124,30 +113,31 @@ def proxy(slug):
 @socketio.on('await_payment')
 def await_payment(data):
 
-    user_token_hash = data['user_token_hash']
-
-    iota_listener.socket_session_ids[user_token_hash] = request.sid
+    set_session(data['user_token_hash'], request.sid)
+    
 
 
 # socket endpoint for manual check on payment
 @socketio.on('check_payment')
 def await_payment(data):
 
-    socketio.start_background_task(iota_listener.manual_payment_check, data['iota_address'], data['user_token_hash'])
+    socketio.start_background_task(iota_listener.manual_payment_check, app, data['iota_address'], data['user_token_hash'])
 
 
 
 
 
 if __name__ == '__main__':
+        db.init_app(app)
 
-        # sadly this all has to run in the same script to make socketio work with threads
-        socketio.start_background_task(iota_listener.start)
+        with app.app_context():
+            db.create_all()
+
+        socketio.start_background_task(iota_listener.start, app)
         socketio.run(app, host='0.0.0.0')
 
         # Stop server
         LOG.info('Stopping ...')
         iota_listener.stop()
-        stop_db()
         
             

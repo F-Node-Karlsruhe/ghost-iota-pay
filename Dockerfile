@@ -3,7 +3,7 @@ FROM python:3.9.5-slim-buster
 
 WORKDIR /app
 
-RUN mkdir db
+RUN mkdir data
 
 COPY requirements.txt requirements.txt
 

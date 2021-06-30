@@ -2,6 +2,6 @@ iota/
 .vscode/
 .DS_store
 .env
-db/*
+data/*
 __pycache__/
 env/

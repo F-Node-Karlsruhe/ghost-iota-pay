@@ -1,26 +1,19 @@
 import requests # pip install requests
 import jwt	# pip install pyjwt
 from datetime import datetime as date
-from dotenv import load_dotenv
 import os
 from bs4 import BeautifulSoup
+from config import URL, GHOST_ADMIN_KEY
 
-load_dotenv()
-
-# Url of the ghost blog
-URL = os.getenv('URL')
-
-# Ghost Admin API key goes here
-key = os.getenv('GHOST_ADMIN_KEY')
 
 # Split the key into ID and SECRET
-id, secret = key.split(':')
+id, secret = GHOST_ADMIN_KEY.split(':')
 
 def get_post(slug, exp_date):
 
     url = '%s/%s' % (URL, slug)
 
-    data = get_post_data(slug)
+    data = get_post_data(slug, html=True)
 
     html = BeautifulSoup(requests.get(url).text, "html.parser")
 
@@ -92,10 +85,13 @@ def get_post_payment(slug, pay_html):
     return html
 
 
-def get_post_data(slug):
+def get_post_data(slug, html=False):
 
     # Make an authenticated request to get a posts html
-    api_url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
+    api_url = '%s/ghost/api/v3/admin/posts/slug/%s' % (URL, slug)
+
+    if html:
+        api_url = '%s/ghost/api/v3/admin/posts/slug/%s/?formats=html' % (URL, slug)
 
     headers = {'Authorization': 'Ghost {}'.format(create_token())}
 
@@ -112,20 +108,6 @@ def create_token():
     }
     return jwt.encode(payload, bytes.fromhex(secret), algorithm='HS256', headers=header)
 
-def check_slug_exists(slug):
+def slug_exists(slug):
     return requests.get('%s/%s' % (URL,slug)).status_code == 200
 
-def check_slug_is_paid(slug):
-    api_url = '%s/ghost/api/v3/admin/posts/slug/%s' % (URL, slug)
-
-    headers = {'Authorization': 'Ghost {}'.format(create_token())}
-
-    return requests.get(api_url, headers=headers).json()['posts'][0]['visibility'] == 'paid'
-
-
-def get_primary_author(slug):
-    api_url = '%s/ghost/api/v3/admin/posts/slug/%s' % (URL, slug)
-
-    headers = {'Authorization': 'Ghost {}'.format(create_token())}
-
-    return requests.get(api_url, headers=headers).json()['posts'][0]['primary_author']

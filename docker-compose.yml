@@ -7,6 +7,6 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./db:/app/db
+      - ./data:/app/data
     stop_signal: SIGINT
     restart: unless-stopped

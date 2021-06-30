@@ -7,7 +7,10 @@ colorama==0.4.4
 dnspython==1.16.0
 eventlet==0.31.0
 Flask==2.0.1
+Flask-Admin==1.5.8
+Flask-Login==0.5.0
 Flask-SocketIO==5.1.0
+Flask-SQLAlchemy==2.5.1
 greenlet==1.1.0
 idna==2.10
 importlib-metadata==4.5.0
@@ -26,7 +29,9 @@ pytz==2021.1
 requests==2.25.1
 six==1.16.0
 soupsieve==2.2.1
+SQLAlchemy==1.4.20
 typing-extensions==3.10.0.0
 urllib3==1.26.5
 Werkzeug==2.0.1
+WTForms==2.3.3
 zipp==3.4.1
