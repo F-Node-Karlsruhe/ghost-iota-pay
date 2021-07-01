@@ -14,16 +14,25 @@ def check_slug(slug, iota_listener):
 
     if __exists(Slug, slug):
 
-        post_data = get_post_data(slug)
-
         # update iota_address if neccesary
-        if AUTHOR_ADDRESSES and post_data['primary_author']['location'] is not None:
+        if AUTHOR_ADDRESSES:
 
-            if post_data['primary_author']['location'] != Author.query.get(post_data['primary_author']['id']).iota_address:
+            author = get_post_data(slug)['primary_author']
 
-                update_author_address(post_data['primary_author']['id'], post_data['primary_author']['location'])
+            if author['location'] is not None:
 
-                iota_listener.add_listening_address(post_data['primary_author']['location'])
+                if author['location'] != Author.query.get(author['id']).iota_address:
+
+                    update_author_address(author['id'], author['name'], author['location'])
+
+                    iota_listener.add_listening_address(author['location'])
+
+            else:
+
+                if Author.query.get(author['id']).iota_address != DEFAULT_IOTA_ADDRESS:
+
+                    update_author_address(author['id'], DEFAULT_IOTA_ADDRESS)
+
 
         return 'paid'
 
@@ -35,14 +44,18 @@ def check_slug(slug, iota_listener):
 
             if post_data['visibility'] == 'paid':
 
+                author = post_data['primary_author']
+
                 # add author if not existant
-                if AUTHOR_ADDRESSES and not __exists(Author, post_data['primary_author']['id']):
+                if not __exists(Author, author['id']):
 
-                    add_author(post_data['primary_author']['id'], post_data['primary_author']['name'], post_data['primary_author']['location'])
+                    add_author(author['id'], author['name'], author['location'])
 
-                    iota_listener.add_listening_address(post_data['primary_author']['location'])
+                    if author['location'] is not None:
 
-                add_slug(slug, post_data['primary_author']['id'])
+                        iota_listener.add_listening_address(author['location'])
+
+                add_slug(slug, author['id'])
 
                 return 'paid'
 
@@ -127,11 +140,17 @@ def add_slug(slug, author_id, price=None):
     db.session.add(slug)
     db.session.commit()
 
-def update_author_address(author_id, iota_address):
+def update_author_address(author_id, name, iota_address):
 
-    if AUTHOR_ADDRESSES:
+    author = Author.query.get(author_id)
 
-        Author.query.get(author_id).iota_address = iota_address
+    if not author:
+
+        add_author(author_id, name, iota_address)
+        
+    else:
+
+        author.iota_address = iota_address
 
         db.session.commit()
 
