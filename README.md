@@ -134,6 +134,6 @@ As an IOTA address is quite ugly in the location field of the author, you can mo
 {{/if}}
 ```
 
-## Author address setup
+## Admin panel setup
 You can set `ADMIN_PANEL=true` in your `.env` file to enable the admin panel on the `admin` path.  
 The admin panel is secured using basic authentication which credential are specified in the `.env` file as well.
