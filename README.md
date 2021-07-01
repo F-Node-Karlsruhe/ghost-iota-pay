@@ -7,7 +7,7 @@
 [![Docker](https://img.shields.io/docker/stars/fnode/ghost-iota-pay.svg)](https://hub.docker.com/r/fnode/ghost-iota-pay/)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/F-Node-Karlsruhe/ghost-iota-pay.svg)](https://github.com/F-Node-Karlsruhe/ghost-iota-pay/issues)  
-**Pay per content in ghost blog with IOTA.**  
+**Pay per content in ghost blog with [IOTA](https://www.iota.org/).**  
 
 Test it here: [blog.f-node.de](https://blog.f-node.de)  
 Watch it here: [https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A)  
@@ -135,5 +135,5 @@ As an IOTA address is quite ugly in the location field of the author, you can mo
 ```
 
 ## Admin panel setup
-You can set `ADMIN_PANEL=true` in your `.env` file to enable the admin panel on the `admin` path.  
-The admin panel is secured using basic authentication which credential are specified in the `.env` file as well.
+You can set `ADMIN_PANEL=true` in your `.env` file to enable the admin panel on the `/admin` path.  
+The admin panel is secured using basic authentication which credentials are specified in the `.env` file as well.
