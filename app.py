@@ -24,7 +24,7 @@ from database.operations import (check_slug,
                                 get_access,
                                 get_slug_data,
                                 get_author_address,
-                                set_session,
+                                set_socket_session,
                                 access_expired)
 
 
@@ -124,7 +124,7 @@ def proxy(slug):
 @socketio.on('await_payment')
 def await_payment(data):
 
-    set_session(data['user_token_hash'], request.sid)
+    set_socket_session(data['user_token_hash'], request.sid)
     
 
 

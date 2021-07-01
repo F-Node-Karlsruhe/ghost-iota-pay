@@ -1,13 +1,13 @@
-from datetime import datetime
 from database.db import db
 
 from database.models.access import Access
 from database.models.authors import Author
 from database.models.slugs import Slug
-from database.models.sessions import Session
 
 from services.ghost_api import slug_exists, get_post_data
 from config import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
+
+socket_sessions = {}
 
 
 def check_slug(slug, iota_listener):
@@ -99,25 +99,20 @@ def get_slug_price_for_hash(user_token_hash):
 
 
 
-def set_session(user_token_hash, session_id):
+def set_socket_session(user_token_hash, session_id):
 
-    session = Session.query.get(user_token_hash)
-
-    if not session:
-
-        session = Session(token_hash=user_token_hash, session_id=session_id)
-
-        db.session.add(session)
-        db.session.commit()
-
-    else:
-
-        session.session_id = session_id
-        db.session.commit()
+    socket_sessions[user_token_hash] = session_id
+    
 
 def get_socket_session(user_token_hash):
 
-    return Session.query.get(user_token_hash)
+    try:
+
+        return socket_sessions[user_token_hash]
+
+    except KeyError:
+
+        return None
 
 
 def add_access(user_token_hash, exp_date=None):

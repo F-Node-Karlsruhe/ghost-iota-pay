@@ -4,7 +4,6 @@ from flask_admin.contrib.sqla import ModelView
 from database.db import db
 from database.models.access import Access
 from database.models.authors import Author
-from database.models.sessions import Session
 from database.models.slugs import Slug
 
 
@@ -52,5 +51,4 @@ auth = BasicAuth()
 
 admin.add_view(PkModelView(Access, db.session, name='Access', category='Database'))
 admin.add_view(PkModelView(Author, db.session, name='Authors', category='Database'))
-admin.add_view(PkModelView(Session, db.session, name='Sessions', category='Database'))
 admin.add_view(PkModelView(Slug, db.session, name='Posts', category='Database'))

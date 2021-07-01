@@ -110,7 +110,7 @@ class Listener():
         if socket_session:
 
             # emit pamyent received event to the user
-            self.socketio.emit('payment_received', room=socket_session.session_id)
+            self.socketio.emit('payment_received', room=socket_session)
 
 
     def payment_valid(self, message, user_token_hash):
@@ -165,7 +165,7 @@ class Listener():
                 if socket_session:
 
                     # emit pamyent not found
-                    self.socketio.emit('payment_not_found', room=socket_session.session_id)
+                    self.socketio.emit('payment_not_found', room=socket_session)
 
                 self.manual_payment_checks.remove(user_token_hash)
 
