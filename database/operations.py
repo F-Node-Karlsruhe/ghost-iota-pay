@@ -38,7 +38,7 @@ def check_slug(slug, iota_listener):
                 # add author if not existant
                 if AUTHOR_ADDRESSES and not __exists(Author, post_data['primary_author']['id']):
 
-                    add_author(post_data['primary_author']['id'], post_data['primary_author']['location'])
+                    add_author(post_data['primary_author']['id'], post_data['primary_author']['name'], post_data['primary_author']['location'])
 
                     iota_listener.add_listening_address(post_data['primary_author']['location'])
 
@@ -114,9 +114,9 @@ def add_access(user_token_hash, exp_date=None):
     db.session.commit()
 
 
-def add_author(author_id, iota_address):
+def add_author(author_id, name, iota_address):
 
-    author = Author(id=author_id, iota_address=iota_address)
+    author = Author(id=author_id, name=name, iota_address=iota_address)
 
     db.session.add(author)
     db.session.commit()

@@ -52,7 +52,8 @@ class Listener():
 
 
     def start(self, app):
-        self.client.subscribe_topics(get_iota_listening_addresses(), self.on_mqtt_event)
+        with app.app_context():
+            self.client.subscribe_topics(get_iota_listening_addresses(), self.on_mqtt_event)
         self.mqtt_worker(app)
 
 

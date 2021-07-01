@@ -2,7 +2,12 @@ import logging
 import secrets
 from utils.hash import hash_user_token
 from services.ghost_api import get_post, get_post_payment
-from config import SECRET_KEY, DATABASE_LOCATION, SESSION_LIFETIME, URL, ADMIN_PANEL
+from config import (SECRET_KEY,
+                    DATABASE_LOCATION,
+                    SESSION_LIFETIME,
+                    URL, ADMIN_PANEL,
+                    ADMIN_USER,
+                    ADMIN_PW)
 import os
 from services.iota import Listener
 from datetime import datetime, timedelta
@@ -14,7 +19,7 @@ from flask import (Flask,
                     send_from_directory,
                     redirect)
 from database.db import db
-from admin import admin
+from admin import admin, auth
 from database.operations import (check_slug,
                                 get_access,
                                 get_slug_data,
@@ -30,6 +35,10 @@ app.config['SECRET_KEY'] = SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_LOCATION
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['BASIC_AUTH_USERNAME'] = ADMIN_USER
+
+app.config['BASIC_AUTH_PASSWORD'] = ADMIN_PW
 
 # create web socket for async communication
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
@@ -137,6 +146,7 @@ if __name__ == '__main__':
 
         if ADMIN_PANEL:
             admin.init_app(app)
+            auth.init_app(app)
 
         socketio.start_background_task(iota_listener.start, app)
         socketio.run(app, host='0.0.0.0')

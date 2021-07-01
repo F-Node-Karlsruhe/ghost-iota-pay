@@ -22,3 +22,7 @@ NODE_URL = getenv('NODE_URL')
 GHOST_ADMIN_KEY = getenv('GHOST_ADMIN_KEY')
 
 ADMIN_PANEL = getenv('ADMIN_PANEL') == 'true'
+
+ADMIN_USER = getenv('ADMIN_USER')
+
+ADMIN_PW = getenv('ADMIN_PW')

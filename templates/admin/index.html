@@ -1,0 +1,14 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+{{ super() }}
+    <div style="margin: auto; text-align: center;">
+        <img src="{{ url_for('static', filename='logo.png') }}" style="max-width: 200px;"/>
+        <h2>Ghost IOTA Pay</h2>
+        <h3>Admin Panel</h3>
+        <p>Pay per content gateway for <a href="https://ghost.org/">Ghost Blogs</a></p>
+        <div style="margin-top: 50px;">
+            <p><a href="https://github.com/F-Node-Karlsruhe/ghost-iota-pay"><img width="16" src="{{ url_for('static', filename='github.png') }}"/></a></p>
+        </div>
+    </div>
+{% endblock body %}

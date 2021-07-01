@@ -114,7 +114,7 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
 ```
 Example file [ghost-integration/post.hbs](ghost-integration/post.hbs)
 
-# Author address setup
+## Author address setup
 You can set `AUTHOR_ADDRESSES=true` in your `.env` file to allow authors to get paid individually.
 If so, the authors can paste in their current IOTA address in the `location` field in their ghost admin panel.  
 When an article is requested, the ghost API is fetched to get the latest address. If there is none, there is a fallback to the last address used or if this is not the case, the default address specified in the `.env` file is used.  
@@ -133,3 +133,7 @@ As an IOTA address is quite ugly in the location field of the author, you can mo
         </iota-button></span>
 {{/if}}
 ```
+
+## Author address setup
+You can set `ADMIN_PANEL=true` in your `.env` file to enable the admin panel on the `admin` path.  
+The admin panel is secured using basic authentication which credential are specified in the `.env` file as well.
