@@ -23,7 +23,7 @@ def check_slug(slug, iota_listener):
 
                 if author['location'] != Author.query.get(author['id']).iota_address:
 
-                    update_author_address(author['id'], author['name'], author['location'])
+                    update_author_address(author['id'], author['location'])
 
                     iota_listener.add_listening_address(author['location'])
 
@@ -102,7 +102,7 @@ def get_slug_price_for_hash(user_token_hash):
 def set_socket_session(user_token_hash, session_id):
 
     socket_sessions[user_token_hash] = session_id
-    
+
 
 def get_socket_session(user_token_hash):
 
@@ -135,19 +135,11 @@ def add_slug(slug, author_id, price=None):
     db.session.add(slug)
     db.session.commit()
 
-def update_author_address(author_id, name, iota_address):
+def update_author_address(author_id, iota_address):
 
-    author = Author.query.get(author_id)
+    Author.query.get(author_id).iota_address = iota_address
 
-    if not author:
-
-        add_author(author_id, name, iota_address)
-        
-    else:
-
-        author.iota_address = iota_address
-
-        db.session.commit()
+    db.session.commit()
 
 
 def get_slug_data(slug):
