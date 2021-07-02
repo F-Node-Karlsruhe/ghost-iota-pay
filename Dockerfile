@@ -1,6 +1,12 @@
 
 FROM python:3.9.5-slim-buster
 
+LABEL version="0.4"
+
+LABEL source="https://github.com/F-Node-Karlsruhe/ghost-iota-pay"
+
+LABEL maintainer="contact@f-node.de"
+
 WORKDIR /app
 
 RUN mkdir data
