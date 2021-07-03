@@ -37,7 +37,7 @@ Alter the following variables in the `.env` file:
 - `GHOST_ADMIN_KEY`
   Default Value: _null_. Set to the admin key of a custom integration. Can be generated in the admin dashboard ([Custom Integration](https://ghost.org/integrations/custom-integrations/))
 
-- `IOTA_ADDRESS`
+- `DEFAULT_IOTA_ADDRESS`
   Default Value: _null_. Set to the IOTA Address which is owned by the blog. The application will listen there for incoming payments.
 
 - `NODE_URL`
