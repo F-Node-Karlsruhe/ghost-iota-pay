@@ -120,11 +120,9 @@ class Listener():
 
         for output in message['payload']['transaction'][0]['essence']['outputs']:
 
-            if is_own_address(output['signature_locked_single']['address']):
+            if output['signature_locked_single']['amount'] >= get_slug_price_for_hash(user_token_hash):
 
-                if output['signature_locked_single']['amount'] >= get_slug_price_for_hash(user_token_hash):
-
-                    return True
+                return True
 
         return False
 
