@@ -37,7 +37,7 @@ Alter the following variables in the `.env` file:
 - `GHOST_ADMIN_KEY`
   Default Value: _null_. Set to the admin key of a custom integration. Can be generated in the admin dashboard ([Custom Integration](https://ghost.org/integrations/custom-integrations/))
 
-- `IOTA_ADDRESS`
+- `DEFAULT_IOTA_ADDRESS`
   Default Value: _null_. Set to the IOTA Address which is owned by the blog. The application will listen there for incoming payments.
 
 - `NODE_URL`
@@ -137,3 +137,10 @@ As an IOTA address is quite ugly in the location field of the author, you can mo
 ## Admin panel setup
 You can set `ADMIN_PANEL=true` in your `.env` file to enable the admin panel on the `/admin` path.  
 The admin panel is secured using basic authentication which credentials are specified in the `.env` file as well.
+
+
+## Donation
+
+I develop this gateway in my free time. If you want to support me or if my work helps you, kindly consider a small donation :)
+
+[<img src="https://img.shields.io/badge/iota1qrkale2wq836sxm2y5kkv58lt7x3w3m3dwk6zztfyv4h3tujs9fhv4ru4wc-lightgrey?style=social&logo=iota" alt="IOTA">](https://blog.f-node.de/author/f-node/)
