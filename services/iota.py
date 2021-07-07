@@ -47,6 +47,7 @@ class Listener():
     def on_mqtt_event(self, event):
         """Put the received event to queue.
         """
+        LOG.info('Received tangle event: %s', event)
         self.q.put(event)
 
 
@@ -137,25 +138,32 @@ class Listener():
 
                 self.manual_payment_checks.add(user_token_hash)
 
+                
+
                 outputs = self.client.find_outputs(addresses=[address])
 
                 for output in outputs:
 
-                    message = self.client.get_message_data(output['message_id'])
+                    try:
 
-                    if user_token_hash == bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode():
+                        message = self.client.get_message_data(output['message_id'])
 
-                        if self.payment_valid(message, user_token_hash):
+                        if user_token_hash == bytes(message['payload']['transaction'][0]['essence']['payload']['indexation'][0]['data']).decode():
 
-                            exp_time = self.get_payment_expiry(output['message_id'])
+                            if self.payment_valid(message, user_token_hash):
 
-                            if exp_time > datetime.utcnow():
+                                exp_time = self.get_payment_expiry(output['message_id'])
 
-                                self.unlock_content(user_token_hash, exp_time)
+                                if exp_time > datetime.utcnow():
 
-                                self.manual_payment_checks.remove(user_token_hash)
+                                    self.unlock_content(user_token_hash, exp_time)
 
-                                return
+                                    self.manual_payment_checks.remove(user_token_hash)
+
+                                    return
+
+                    except Exception as e:
+                        LOG.error(e)
 
                 # prevent key errors
                 socket_session = get_socket_session(user_token_hash)
