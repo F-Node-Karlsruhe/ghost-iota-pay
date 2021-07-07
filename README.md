@@ -38,7 +38,7 @@ Alter the following variables in the `.env` file:
   Default Value: _null_. Set to the admin key of a custom integration. Can be generated in the admin dashboard ([Custom Integration](https://ghost.org/integrations/custom-integrations/))
 
 - `DEFAULT_IOTA_ADDRESS`
-  Default Value: _null_. Set to the IOTA Address which is owned by the blog. The application will listen there for incoming payments.
+  Default Value: `NO ADDRESS GIVEN`. Set to the IOTA Address which is owned by the blog. The application will listen there for incoming payments.
 
 - `NODE_URL`
   Default Value: `https://api.hornet-1.testnet.chrysalis2.com`. Set to the url of your prefered node.  

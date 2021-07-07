@@ -4,8 +4,7 @@ import queue
 import json
 import logging
 from datetime import datetime, timedelta
-import os
-from config import SESSION_LIFETIME, NODE_URL
+from config.settings import SESSION_LIFETIME, NODE_URL
 
 from database.operations import get_iota_listening_addresses, add_access, is_own_address, get_socket_session, get_slug_price_for_hash
 

@@ -2,12 +2,9 @@ import logging
 import secrets
 from utils.hash import hash_user_token
 from services.ghost_api import get_post, get_post_payment
-from config import (SECRET_KEY,
-                    DATABASE_LOCATION,
-                    SESSION_LIFETIME,
-                    URL, ADMIN_PANEL,
-                    ADMIN_USER,
-                    ADMIN_PW)
+from config.settings import (SESSION_LIFETIME,
+                    URL,
+                    ADMIN_PANEL)
 import os
 from services.iota import Listener
 from datetime import datetime, timedelta
@@ -30,15 +27,7 @@ from database.operations import (check_slug,
 
 app = Flask(__name__.split('.')[0])
 
-app.config['SECRET_KEY'] = SECRET_KEY
-
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_LOCATION
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-app.config['BASIC_AUTH_USERNAME'] = ADMIN_USER
-
-app.config['BASIC_AUTH_PASSWORD'] = ADMIN_PW
+app.config.from_object('config.flask')
 
 # create web socket for async communication
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")

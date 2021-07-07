@@ -3,7 +3,7 @@ import jwt	# pip install pyjwt
 from datetime import datetime as date
 import os
 from bs4 import BeautifulSoup
-from config import URL, GHOST_ADMIN_KEY
+from config.settings import URL, GHOST_ADMIN_KEY
 
 
 # Split the key into ID and SECRET

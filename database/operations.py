@@ -5,7 +5,7 @@ from database.models.authors import Author
 from database.models.slugs import Slug
 
 from services.ghost_api import slug_exists, get_post_data
-from config import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
+from config.settings import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
 
 socket_sessions = {}
 
