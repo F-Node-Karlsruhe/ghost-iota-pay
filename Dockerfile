@@ -26,4 +26,4 @@ RUN pip install iota_client_python-0.2.0_alpha.3-cp36-abi3-linux_x86_64.whl
 
 EXPOSE 8000
 
-CMD ["gunicorn", "-c", "python:config.gunicorn", "ghostiotapay.app:create_app()"]
+CMD ["gunicorn", "-c", "python:config.gunicorn", "-k", "geventwebsocket.gunicorn.workers.GeventWebSocketWorker", "ghostiotapay.app:create_app()"]

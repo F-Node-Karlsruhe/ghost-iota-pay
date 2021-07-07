@@ -1,5 +1,5 @@
-from database.db import db
-from config import DEFAULT_PRICE
+from database import db
+from config.settings import DEFAULT_PRICE
 
 class Slug(db.Model):
     slug = db.Column(db.String(128), primary_key=True)

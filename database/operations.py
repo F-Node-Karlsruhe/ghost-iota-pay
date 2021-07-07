@@ -1,16 +1,16 @@
-from database.db import db
+from . import db
 
 from database.models.access import Access
 from database.models.authors import Author
 from database.models.slugs import Slug
 
-from services.ghost_api import slug_exists, get_post_data
-from config import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
+from services.ghost.api import slug_exists, get_post_data
+from config.settings import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
 
 socket_sessions = {}
 
 
-def check_slug(slug, iota_listener):
+def check_slug(slug):
 
     if __exists(Slug, slug):
 
@@ -182,3 +182,5 @@ def is_own_address(iota_address):
 
 def __exists(table, key):
     return table.query.get(key) is not None
+
+from services.iota import iota_listener

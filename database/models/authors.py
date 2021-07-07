@@ -1,5 +1,5 @@
-from database.db import db
-from config import DEFAULT_IOTA_ADDRESS
+from database import db
+from config.settings import DEFAULT_IOTA_ADDRESS
 
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)

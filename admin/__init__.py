@@ -1,7 +1,7 @@
 from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_basicauth import BasicAuth
 from flask_admin.contrib.sqla import ModelView
-from database.db import db
+from database import db
 from database.models.access import Access
 from database.models.authors import Author
 from database.models.slugs import Slug
