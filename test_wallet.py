@@ -45,6 +45,35 @@ def get_message():
     print(bytes(message_index[0]['data']).decode())
     #print(message_content)
 
+def create_dust_allowed_address(seed=SERVICE_SEED, account_index:int = 0, dust_address:str = RECIPIENT_ADDRESS, number_of_dust_transactions:int = 10)-> str:
+    if number_of_dust_transactions < 10:
+        print("Value of possible dust transactions as %d to create a dust enabled account is too low " % number_of_dust_transactions)
+        return ""
+    if number_of_dust_transactions > 100:
+        print("Value of possible dust transactions as %d to create a dust enabled account is too high " % number_of_dust_transactions)
+        return ""
+    value = 100_000 * number_of_dust_transactions
+    message = client.message(
+        seed=seed,
+        dust_allowance_outputs=[
+            {
+                'address': dust_address,
+                'amount': value,
+            }
+        ]
+    )
+    print("Dust is now allowed for %s" % dust_address, end='', flush=True)
+    client.retry_until_included(message_id = message['message_id'])
+    print(" - now confirmed")
+    return message['message_id']
+
+def is_dust_enabled( address:str = RECIPIENT_ADDRESS) -> bool:
+    address_balance_pair = client.get_address_balances([address])[0]
+    if address_balance_pair['dust_allowed']:
+        return True
+    return False
+
 
 if __name__ == '__main__':
-    send()
+    print(create_dust_allowed_address())
+    print(client.get_address_balances([RECIPIENT_ADDRESS])[0])
