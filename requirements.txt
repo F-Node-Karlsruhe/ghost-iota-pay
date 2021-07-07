@@ -1,6 +1,7 @@
 beautifulsoup4==4.9.3
 bidict==0.21.2
 certifi==2021.5.30
+cffi==1.14.5
 chardet==4.0.0
 click==8.0.1
 colorama==0.4.4
@@ -12,6 +13,7 @@ Flask-Login==0.5.0
 Flask-SocketIO==5.1.0
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.0
+gunicorn==20.1.0
 idna==2.10
 importlib-metadata==4.5.0
 iota-client==0.2.0a8
@@ -20,6 +22,7 @@ Jinja2==3.0.1
 MarkupSafe==2.0.1
 numpy==1.20.3
 pi==0.1.2
+pycparser==2.20
 PyJWT==2.1.0
 python-dateutil==2.8.1
 python-dotenv==0.17.1
@@ -35,3 +38,5 @@ urllib3==1.26.5
 Werkzeug==2.0.1
 WTForms==2.3.3
 zipp==3.4.1
+zope.event==4.5.0
+zope.interface==5.4.0
