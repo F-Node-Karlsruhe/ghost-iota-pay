@@ -14,8 +14,8 @@
             location.reload();
         });
         socket.on('payment_not_found', function() {
-            console.log('Payment not found');
-            document.getElementById("loader_text").innerHTML = 'Waiting for payment ...'
+            document.getElementById("loader_text").innerHTML = 'No valid payment found'
+            setTimeout("document.getElementById('loader_text').innerHTML = 'Waiting for payment ...'", 5000);
         });
         $('#check_payment_button').on('click', function(){
             socket.emit('check_payment', {user_token_hash: '{{ user_token_hash }}', iota_address: '{{ iota_address }}'});

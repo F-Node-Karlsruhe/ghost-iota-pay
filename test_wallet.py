@@ -7,7 +7,7 @@ SERVICE_SEED = 'a201599ad3bc079378e1e3cba43ee976828c146ec95f296c7d3a4ddc7dee24f3
 SEED = USER_SEED
 RECIPIENT_ADDRESS = 'atoi1qq4tuenpv2cxlcg7hd2lem6q7qzvt5wlapmtfj92nskpmuq9luqtqyguj6x'
 INDEX = "ghost-iota-pay"
-DATA = "7485b5f5ea094bd449b5b0077c0b7b3d47108a3a5197be5bfb427ffe4186530d".encode()
+DATA = "ee398d5c2373add55c19cdbc4f70a0cce31bda4aed7ec224a55734384649f377".encode()
 # Chrysalis testnet node
 client = iota_client.Client()
 

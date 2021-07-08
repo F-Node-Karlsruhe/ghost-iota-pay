@@ -5,7 +5,7 @@ from database.models.authors import Author
 from database.models.slugs import Slug
 
 from services.ghost_api import slug_exists, get_post_data
-from config import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
+from config.settings import DEFAULT_IOTA_ADDRESS, AUTHOR_ADDRESSES
 
 socket_sessions = {}
 
@@ -102,6 +102,11 @@ def get_slug_price_for_hash(user_token_hash):
 def set_socket_session(user_token_hash, session_id):
 
     socket_sessions[user_token_hash] = session_id
+
+
+def reset_socket_sessions():
+
+    socket_sessions.clear()
 
 
 def get_socket_session(user_token_hash):
