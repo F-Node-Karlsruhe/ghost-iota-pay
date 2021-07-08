@@ -104,6 +104,11 @@ def set_socket_session(user_token_hash, session_id):
     socket_sessions[user_token_hash] = session_id
 
 
+def reset_socket_sessions():
+
+    socket_sessions.clear()
+
+
 def get_socket_session(user_token_hash):
 
     try:

@@ -46,7 +46,6 @@ class Listener():
     def on_mqtt_event(self, event):
         """Put the received event to queue.
         """
-        LOG.info('Received tangle event: %s', event)
         self.q.put(event)
 
 
@@ -54,6 +53,7 @@ class Listener():
     def start(self, app):
         with app.app_context():
             self.client.subscribe_topics(get_iota_listening_addresses(), self.on_mqtt_event)
+        LOG.info(' started listening ...')
         self.mqtt_worker(app)
 
 
@@ -137,8 +137,6 @@ class Listener():
 
                 self.manual_payment_checks.add(user_token_hash)
 
-                
-
                 outputs = self.client.find_outputs(addresses=[address])
 
                 for output in outputs:
@@ -161,8 +159,8 @@ class Listener():
 
                                     return
 
-                    except Exception as e:
-                        LOG.error(e)
+                    except Exception:
+                        pass
 
                 # prevent key errors
                 socket_session = get_socket_session(user_token_hash)
@@ -191,10 +189,11 @@ class Listener():
         '''
         Stops the iota listener gracefully
         '''
-
+        self.client.unsubscribe()
         self.client.disconnect()
-        LOG.info('MQTT client stopped')
+        LOG.debug('MQTT client stopped')
         self.q.put(self.STOP)
-        LOG.info('MQTT worker stopped')
+        LOG.debug('MQTT worker stopped')
         self.q.queue.clear()
-        LOG.info('Working queue cleared')
+        LOG.debug('Working queue cleared')
+        LOG.info(' stopped listening')

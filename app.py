@@ -3,8 +3,8 @@ import secrets
 from utils.hash import hash_user_token
 from services.ghost_api import get_post, get_post_payment
 from config.settings import (SESSION_LIFETIME,
-                    URL,
-                    ADMIN_PANEL)
+                            URL,
+                            ADMIN_PANEL)
 import os
 from services.iota import Listener
 from datetime import datetime, timedelta
@@ -22,7 +22,8 @@ from database.operations import (check_slug,
                                 get_slug_data,
                                 get_author_address,
                                 set_socket_session,
-                                access_expired)
+                                access_expired,
+                                reset_socket_sessions)
 
 
 app = Flask(__name__.split('.')[0])
@@ -45,6 +46,7 @@ logging.basicConfig(level=logging.INFO)
 
 LOG = logging.getLogger("ghost-iota-pay")
 
+connected_clients = 0
 
 @app.before_request
 def make_session_permanent():
@@ -113,13 +115,40 @@ def proxy(slug):
 @socketio.on('await_payment')
 def await_payment(data):
 
+    global connected_clients
+
+    connected_clients += 1
+
     set_socket_session(data['user_token_hash'], request.sid)
+
+    if connected_clients < 2:
+
+        socketio.start_background_task(iota_listener.start, app)
+
+
+@socketio.on('disconnect')
+def disconnect():
+
+    global connected_clients
+
+    connected_clients -= 1
+
+    if connected_clients < 1:
+
+        LOG.info('%s connected clients. Stopping MQTT ...', connected_clients)
+
+        connected_clients = 0
+
+        reset_socket_sessions()
+
+        socketio.start_background_task(iota_listener.stop)
+
     
 
 
 # socket endpoint for manual check on payment
 @socketio.on('check_payment')
-def await_payment(data):
+def check_payment(data):
 
     socketio.start_background_task(iota_listener.manual_payment_check, app, data['iota_address'], data['user_token_hash'])
 
@@ -137,7 +166,6 @@ if __name__ == '__main__':
             admin.init_app(app)
             auth.init_app(app)
 
-        socketio.start_background_task(iota_listener.start, app)
         socketio.run(app, host='0.0.0.0')
 
         # Stop server
