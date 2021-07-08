@@ -32,7 +32,7 @@ cp example.env .env
 Alter the following variables in the `.env` file:  
 
 - `URL`
-  Default Value: `http://localhost:2365` . Set to the url of the ghost blog which shall be fetched.
+  Default Value: `http://localhost:2368` . Set to the url of the ghost blog which shall be fetched.
 
 - `GHOST_ADMIN_KEY`
   Default Value: _null_. Set to the admin key of a custom integration. Can be generated in the admin dashboard ([Custom Integration](https://ghost.org/integrations/custom-integrations/))
@@ -63,7 +63,7 @@ docker build --tag ghost-iota-pay .
 
 Run the image as container
 ```shell
-docker run -it -p 5000:5000 -v /$(pwd)/data:/app/data --env-file ./.env ghost-iota-pay
+docker run -it -p 5000:5000 -v /$(pwd)/data:/app/data --env-file .env ghost-iota-pay
 ```
 
 ### Run ghost-iota-pay with Docker from repository
@@ -72,7 +72,7 @@ docker run -it -p 5000:5000 -v /$(pwd)/data:/app/data --env-file ./.env ghost-io
 
 Run image from repository
 ```shell
-docker run -it -p 5000:5000 -v /$(pwd)/data:/app/data --env-file ./.env fnode/ghost-iota-pay
+docker run -it -p 5000:5000 -v /$(pwd)/data:/app/data --env-file .env fnode/ghost-iota-pay
 ```
 
 ### Run ghost-iota-pay with docker-compose
@@ -105,7 +105,7 @@ Put the following code into the `post.hbs` of your ghost theme and replace `{{gh
                         <img style="
                             display: inline-block;
                             height:25px;
-                            margin-top: -3px;" 
+                            margin-top: -6px;" 
                             src="https://www.iota.org/logo-icon-light.svg"
                             alt="IOTA"/>
                 </a>
