@@ -4,14 +4,16 @@ import queue
 import json
 import logging
 from datetime import datetime, timedelta
-from config.settings import SESSION_LIFETIME, NODE_URL
+from config.settings import ALLOW_DUST, SESSION_LIFETIME, NODE_URL, DUST_SEED
 
 from database.operations import get_iota_listening_addresses, add_access, is_own_address, get_socket_session, get_slug_price_for_hash
+
+IOTA_DUST = 1000000
 
 
 logging.basicConfig(level=logging.INFO)
 # Set it to you domain
-LOG = logging.getLogger("ghost-iota-pay-mqtt")
+LOG = logging.getLogger("ghost-iota-pay")
 
 
 # The IOTA MQTT broker options
@@ -22,6 +24,12 @@ broker_options = {
     'port': 443,
     'max_reconnection_attempts': 5,
 }
+
+def disable_dust():
+
+    global ALLOW_DUST
+
+    ALLOW_DUST = False
 
 
 class Listener():
@@ -197,3 +205,33 @@ class Listener():
         self.q.queue.clear()
         LOG.debug('Working queue cleared')
         LOG.info(' stopped listening')
+
+
+
+class DustManager():
+
+    def __init__(self):
+
+        if DUST_SEED is None:
+            raise Exception('Canot allow dust without giving a dust seed')
+        
+        self.seed = DUST_SEED
+
+        self.client = iota_client.Client(nodes_name_password=[[NODE_URL]])
+
+        self.balance = self.client.get_balance(self.seed)
+
+        self.dust_address = self.client.get_unspent_address(self.seed)[0]
+
+        if self.balance < IOTA_DUST:
+            LOG.error('Not enough funds to allow dust!')
+            LOG.error('Please transfer at least %s IOTA to address %s', (IOTA_DUST, self.dust_address))
+            disable_dust()          
+
+        self.number_of_dust_transactions = int(self.balance / 100000)
+
+    def transaction_received(self, amount, author_id):
+        pass
+
+    def get_dust_address(self):
+        return self.dust_address

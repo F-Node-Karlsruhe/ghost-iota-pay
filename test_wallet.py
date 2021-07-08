@@ -22,8 +22,8 @@ def send():
     print(f"IOTAs sent!\nhttps://explorer.iota.org/testnet/message/{message_id['message_id']}")
 
 def get_address():    
-    address = client.get_unspent_address(SEED)
-    print(f"Generated address: {address[0]}")
+    address = client.get_addresses(SEED, input_range_begin=0,input_range_end=10, get_all=True)
+    print(f"Generated address: {address}")
     print("Copy your address. You'll need it in the next example.")
     print("Go to https://faucet.tanglekit.de/ and paste your address to receive devnet tokens. "
         "You'll need them in the following examples.")
@@ -75,5 +75,4 @@ def is_dust_enabled( address:str = RECIPIENT_ADDRESS) -> bool:
 
 
 if __name__ == '__main__':
-    print(create_dust_allowed_address())
-    print(client.get_address_balances([RECIPIENT_ADDRESS])[0])
+    get_address()
