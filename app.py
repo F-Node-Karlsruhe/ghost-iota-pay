@@ -1,6 +1,7 @@
 import logging
 import secrets
 from utils.hash import hash_user_token
+from utils.counter import AtomicCounter
 from services.ghost_api import get_post, get_post_payment
 from config.settings import (SESSION_LIFETIME,
                             URL,
@@ -46,7 +47,7 @@ logging.basicConfig(level=logging.INFO)
 
 LOG = logging.getLogger("ghost-iota-pay")
 
-connected_clients = 0
+connected_clients = AtomicCounter()
 
 @app.before_request
 def make_session_permanent():
@@ -115,13 +116,11 @@ def proxy(slug):
 @socketio.on('await_payment')
 def await_payment(data):
 
-    global connected_clients
-
-    connected_clients += 1
-
     set_socket_session(data['user_token_hash'], request.sid)
 
-    if connected_clients < 2:
+    global connected_clients
+
+    if connected_clients.increment() < 2:
 
         socketio.start_background_task(iota_listener.start, app)
 
@@ -131,13 +130,9 @@ def disconnect():
 
     global connected_clients
 
-    connected_clients -= 1
+    if connected_clients.decrement() < 1:
 
-    if connected_clients < 1:
-
-        LOG.info('%s connected clients. Stopping MQTT ...', connected_clients)
-
-        connected_clients = 0
+        LOG.info('%s connected clients. Stopping MQTT ...', connected_clients.value)
 
         reset_socket_sessions()
 
