@@ -224,14 +224,72 @@ class DustManager():
         self.dust_address = self.client.get_unspent_address(self.seed)[0]
 
         if self.balance < IOTA_DUST:
+
             LOG.error('Not enough funds to allow dust!')
+
             LOG.error('Please transfer at least %s IOTA to address %s', (IOTA_DUST, self.dust_address))
+
+            # sets ALLOW_DUST to false gloablly
             disable_dust()          
 
-        self.number_of_dust_transactions = int(self.balance / 100000)
+        self.number_of_dust_transactions = int(self.balance / 100_000)
 
-    def transaction_received(self, amount, author_id):
-        pass
+        if not self.__is_dust_enabled():
+
+            self.__refresh_dust()
+
+    def transaction_received(self):
+
+        self.number_of_dust_transactions -= 1
+
+        if self.number_of_dust_transactions < 1 or not self.__is_dust_enabled():
+            self.__refresh_dust()
+
+    def __refresh_dust(self):
+        # max out dust allowance with entire balance
+        self.balance = self.client.get_balance(self.seed)
+
+        if self.balance < IOTA_DUST:
+
+            disable_dust()
+
+            return 
+
+        # send the entire balance to the dust address wit dust allowance
+        message = self.client.message(
+        seed=self.seed,
+        dust_allowance_outputs=[
+            {
+                'address': self.dust_address,
+                'amount': self.balance,
+            }
+            ]
+        )
+
+        LOG.info("Dust is now allowed for %s" % self.dust_address)
+
+        self.client.retry_until_included(message_id = message['message_id'])
+        
+        # reset counter
+        self.number_of_dust_transactions = int(self.balance / 100_000)
+
+    def __is_dust_enabled(self):
+
+        address_balance_pair = self.client.get_address_balances([self.dust_address])[0]
+
+        if address_balance_pair['dust_allowed']:
+
+            return True
+
+        return False
 
     def get_dust_address(self):
-        return self.dust_address
+
+        if ALLOW_DUST:
+
+            return self.dust_address
+
+        LOG.warning('No dust allowed!')
+
+        return None
+
