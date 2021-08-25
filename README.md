@@ -11,6 +11,7 @@
 
 Test it here: [blog.f-node.de](https://blog.f-node.de)  
 Watch it here: [https://www.youtube.com/watch?v=3XG2W9J3b1A](https://www.youtube.com/watch?v=3XG2W9J3b1A)  
+Or use the service of [https://pay-per-content.com](https://pay-per-content.com)  
 
 ![How it works](https://raw.githubusercontent.com/F-Node-Karlsruhe/ghost-iota-pay/main/images/flowchart.svg)
 
